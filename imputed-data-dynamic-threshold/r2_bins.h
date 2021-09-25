@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include "imputed-data-dynamic-threshold/utilities.h"
+
 namespace imputed_data_dynamic_threshold {
 /*!
   \brief aggregate variant data and apply

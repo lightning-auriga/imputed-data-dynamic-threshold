@@ -73,21 +73,23 @@ void imputed_data_dynamic_threshold::r2_bins::set_bin_boundaries(
 unsigned imputed_data_dynamic_threshold::r2_bins::find_maf_bin(
     const double &maf) const {
   std::map<double, unsigned>::const_iterator lower_finder, upper_finder;
-  lower_finder = _bin_lower_bounds.lower_bound(maf);
+  lower_finder = _bin_lower_bounds.upper_bound(maf);
   upper_finder = _bin_upper_bounds.upper_bound(maf);
   // handle: value comes before the beginning of the smallest bin
-  if (lower_finder == _bin_lower_bounds.begin() &&
-      fabs(_bin_lower_bounds.begin()->first - maf) > DBL_EPSILON) {
+  if (lower_finder == _bin_lower_bounds.begin()) {
     return _bins.size();
   }
+  --lower_finder;
   // handle: value comes after the end of the largest bin
   if (upper_finder == _bin_upper_bounds.end()) {
     return _bins.size();
   }
   // handle: somehow the thing that was found was inconsistent
   if (lower_finder->second != upper_finder->second) {
-    throw std::logic_error("bin location failed for MAF = " +
-                           std::to_string(maf));
+    throw std::logic_error(
+        "bin location failed for MAF = " + std::to_string(maf) + ": " +
+        std::to_string(lower_finder->second) + " " +
+        std::to_string(upper_finder->second));
   }
   // otherwise, this worked evidently
   return lower_finder->second;
@@ -98,9 +100,9 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
   gzFile input = 0;
   char *buffer = 0;
   unsigned buffer_size = 100000, index = 0;
-  std::string line = "", id = "", a0 = "", a1 = "", catcher = "", imputed = "";
-  double maf = 0.0;
-  float r2 = 0.0;
+  std::string line = "", id = "", a0 = "", a1 = "", catcher = "", imputed = "",
+              maf = "", r2 = "";
+  float r2f = 0.0;
   try {
     input = gzopen(filename.c_str(), "rb");
     buffer = new char[buffer_size];
@@ -113,10 +115,12 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
         throw std::runtime_error("cannot parse info file \"" + filename +
                                  "\" line \"" + line + "\"");
       }
-      if (r2 < 0.3) continue;
-      index = find_maf_bin(maf);
+      if (imputed.compare("Imputed")) continue;
+      r2f = from_string<float>(r2);
+      if (r2f < 0.3) continue;
+      index = find_maf_bin(from_string<double>(maf));
       if (index < _bins.size()) {
-        _bins.at(index).add_value(r2);
+        _bins.at(index).add_value(r2f);
       }
     }
     gzclose(input);
