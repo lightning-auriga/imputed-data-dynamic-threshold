@@ -1,0 +1,11 @@
+repos:
+
+## C++ support
+- repo: https://gitlab.com/daverona/pre-commit/cpp
+  rev: 0.8.0
+  hooks:
+  - id: clang-format
+  - id: cpplint
+    args: ["--includeorder=default"]
+  - id: cppcheck
+

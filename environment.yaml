@@ -1,0 +1,17 @@
+name: imputed-data-dynamic-threshold-env
+dependencies:
+  - boost-cpp
+  - yaml-cpp
+  - git
+# required for commitizen
+  - nodejs
+  - pre-commit
+  - cppcheck
+  - sarcasm::clang-format
+
+
+  - libtool
+  - automake
+  - autoconf
+  - make>=4.2
+  - gxx_linux-64>=8.2.0

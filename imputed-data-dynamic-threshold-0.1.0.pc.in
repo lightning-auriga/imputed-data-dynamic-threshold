@@ -1,0 +1,11 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: imputed-data-dynamic-threshold
+Description: compute r2 threshold using Yun Li cleaning method
+Requires: gcc >= 8.2.0
+Version: @PACKAGE_VERSION@
+Libs: -L${libdir}
+Cflags: -I${includedir}/imputed-data-dynamic-threshold-0.1.0 -I${libdir}/imputed-data-dynamic-threshold-0.1.0/include
