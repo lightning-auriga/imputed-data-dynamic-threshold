@@ -54,6 +54,20 @@ void imputed_data_dynamic_threshold::r2_bin::report_threshold(
     throw std::runtime_error("cannot write to file; out of disk space?");
 }
 
+bool imputed_data_dynamic_threshold::r2_bin::operator==(
+    const r2_bin &obj) const {
+  if (fabs(_bin_max - obj._bin_max) > DBL_EPSILON) return false;
+  if (fabs(_bin_min - obj._bin_min) > DBL_EPSILON) return false;
+  if (_data.size() != obj._data.size()) return false;
+  for (unsigned i = 0; i < _data.size(); ++i) {
+    if (fabs(_data.at(i) - obj._data.at(i)) > FLT_EPSILON) return false;
+  }
+  if (fabs(_total - obj._total) > DBL_EPSILON) return false;
+  if (_total_count != obj._total_count) return false;
+  if (_filtered_count != obj._filtered_count) return false;
+  return true;
+}
+
 void imputed_data_dynamic_threshold::r2_bins::set_bin_boundaries(
     const std::vector<double> &boundaries) {
   if (boundaries.size() < 2) {
@@ -157,4 +171,28 @@ void imputed_data_dynamic_threshold::r2_bins::report_thresholds(
     iter->report_threshold(output);
   }
   output.close();
+}
+
+bool imputed_data_dynamic_threshold::r2_bins::operator==(
+    const r2_bins &obj) const {
+  if (_bins.size() != obj._bins.size()) return false;
+  for (unsigned i = 0; i < _bins.size(); ++i) {
+    if (_bins.at(i) != obj._bins.at(i)) return false;
+  }
+  std::map<double, unsigned>::const_iterator this_iter, that_iter;
+  for (this_iter = _bin_lower_bounds.begin(),
+      that_iter = obj._bin_lower_bounds.begin();
+       this_iter != _bin_lower_bounds.end(); ++this_iter, ++that_iter) {
+    if (fabs(this_iter->first - that_iter->first) > DBL_EPSILON ||
+        this_iter->second != that_iter->second)
+      return false;
+  }
+  for (this_iter = _bin_upper_bounds.begin(),
+      that_iter = obj._bin_upper_bounds.begin();
+       this_iter != _bin_upper_bounds.end(); ++this_iter, ++that_iter) {
+    if (fabs(this_iter->first - that_iter->first) > DBL_EPSILON ||
+        this_iter->second != that_iter->second)
+      return false;
+  }
+  return true;
 }

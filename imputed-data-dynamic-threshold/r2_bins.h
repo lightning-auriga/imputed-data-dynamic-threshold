@@ -74,8 +74,14 @@ class r2_bin {
     @param out target output stream for writing content
    */
   void report_threshold(std::ostream &out) const;
+  /*!
+    \brief test for equality between objects of this class
+    @param obj object to compare to *this
+    \return whether all entries in the object are (approximately) equal
+   */
+  bool operator==(const r2_bin &obj) const;
 
- private:
+ protected:
   double _bin_min;           //!< minimum MAF in this bin, exclusive
   double _bin_max;           //!< maximum MAF in this bin, inclusive
   std::vector<float> _data;  //!< aggregated r2 data
@@ -131,8 +137,14 @@ class r2_bins {
     @param filename name of file to which to report this information
    */
   void report_thresholds(const std::string &filename) const;
+  /*!
+    \brief test for equality between objects of this class
+    @param obj object to compare to *this
+    \return whether all entries in the object are (approximately) equal
+   */
+  bool operator==(const r2_bins &obj) const;
 
- private:
+ protected:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation
   std::map<double, unsigned> _bin_lower_bounds;  //!< MAF lower bound lookup
   std::map<double, unsigned> _bin_upper_bounds;  //!< MAF upper bound lookup
