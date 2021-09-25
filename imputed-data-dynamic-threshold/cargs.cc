@@ -10,6 +10,16 @@
 void imputed_data_dynamic_threshold::cargs::initialize_options() {
   _desc.add_options()("help,h", "emit this help message")(
       "output-prefix,o",
-      boost::program_options::value<std::string>()->default_value("out"),
-      "prefix of all output files written by software");
+      boost::program_options::value<std::string>()->default_value(
+          "output-filename,o"),
+      "output summary filename for reporting bin thresholds")(
+      "target-average-r2,r",
+      boost::program_options::value<double>()->default_value(0.9),
+      "average r2 target for each minor allele frequency bin")(
+      "info-gz-files,i",
+      boost::program_options::value<std::vector<std::string> >()->multitoken(),
+      "info.gz output files from minimac4")(
+      "maf-bin-boundaries,m",
+      boost::program_options::value<std::vector<double> >()->multitoken(),
+      "boundaries for minor allele frequency bins");
 }

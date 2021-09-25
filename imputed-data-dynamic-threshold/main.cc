@@ -32,7 +32,10 @@ int main(int argc, char **argv) {
     ap.print_help(std::cout);
     return 0;
   }
-
+  std::vector<double> maf_bin_boundaries = ap.get_maf_bin_boundaries();
+  std::vector<std::string> info_files = ap.get_info_gz_files();
+  double target_r2 = ap.get_target_average_r2();
+  std::string output_filename = ap.get_output_filename();
   std::cout << "all done woo!" << std::endl;
   return 0;
 }
