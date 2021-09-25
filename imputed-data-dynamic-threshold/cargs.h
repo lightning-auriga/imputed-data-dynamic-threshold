@@ -75,7 +75,7 @@ class cargs {
     respectively, are ignored. upper bin boundaries are inclusive,
     while lower bin boundaries are exclusive. these bins default to:
     (0.001, 0.005], (0.005, 0.01], (0.01, 0.03], (0.03, 0.05], (0.05, 0.5],
-    according to 10.1002/gepi.21603.
+    according to doi:10.1002/gepi.21603.
    */
   std::vector<double> get_maf_bin_boundaries() const {
     std::string tag = "maf-bin-boundaries";
