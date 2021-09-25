@@ -6,10 +6,13 @@ compute r2 threshold using Yun Li cleaning method
 
 ## Overview
 
-This README is an automated stub generated from a `cookiecutter` template.
-Documentation below reflects the state of the templated project immediately
-after creation and may not reflect the current state of the project after
-development updates.
+Traditionally, post-imputation variant filtering has been applied with
+a single, constant r^2 cutoff applied to all variants. Over the last decade,
+one of the original creators of the mach/minimac family of imputation tools
+has switched to a more nuanced model of filtering where different r^2 filters
+are selected for different minor allele frequency bins based on the desired
+per-bin post-filtering average r^2. This package implements the calculation
+of those bin-specific filters.
 
 ## Requirements
 
@@ -25,6 +28,7 @@ development updates.
   - [boost filesystem/system](https://www.boost.org/doc/libs/1_75_0/libs/filesystem/doc/index.htm)
   - [boost iostreams](https://www.boost.org/doc/libs/1_74_0/libs/iostreams/doc/index.html)
   - [yaml-cpp](https://github.com/jbeder/yaml-cpp)
+  - [zlib](https://zlib.net)
 
 ## Build
 
@@ -77,6 +81,23 @@ By default, a build process involving a [conda](https://docs.conda.io/en/latest/
 By default, the final compiled program can be run with
 
 `./imputed-data-dynamic-threshold.out`
+
+The following command line options are supported with this software:
+
+- `-h, --help`: print in-terminal help text describing these accepted parameters.
+- `-i, --info-gz-files [FILE ...]`: specify minimac4-format `info.gz` files for processing with this software. file extension is not checked, and flat files that have already been extracted are supported. only variants tagged as `Imputed` in info column 8 are considered for this filtering criterion. it is anticipated that, for example, all autosomal info files for a single imputation will be in one directory, so they can all be specified to the software at once as `-i /path/to/files/*info.gz`.
+- `-m, --maf-bin-boundaries [BOUND1 BOUND2 ...]`: definition of minor allele frequency bins in which to compute separate r^2 thresholds. bounds should be strictly increasing decimal values on [0,1]. the arguments are interpreted as follows: the specification `-m 0.001 0.005 0.01 0.03 0.05 0.5` is converted into the frequency bins `(0.001, 0.005]`, `(0.005, 0.01]`, `(0.01, 0.03]`, `(0.03, 0.05]`, `(0.05, 0.5]`. variants with allele frequencies falling below the minimum bound or above the maximum bound of the provided bins are excluded from consideration entirely. note that a maximum bound of 0.5 captures all variation on that end as these are _minor_ allele frequencies.
+- `-o, --output-filename [FILE]`: name of file in which to store tabular output summary. output format is tab-delimited plaintext, one row per frequency bin, with the following columns:
+  - `bin_min`: minimum minor allele frequency, exclusive, of the specified bin
+  - `bin_max`: maximum minor allele frequency, inclusive, of the specified bin
+  - `total_variants`: number of variants in bin before dynamic filtering
+  - `threshold`: dynamic filter applied to bin to reach desired average r^2. this entry can be `nan`, in which case the desired average r^2 is greater than the maximum r^2 of variants falling within this bin (or the bin is empty to begin with)
+  - `variants_after_filter`: number of variants in bin after dynamic filtering
+  - `proportion_passing`: proportion of variants passing dynamic filter
+- `-r, --target-average-r2 [R2]`: desired average r^2 within bin after dynamic filtering. this should be a value on [0, 1], though values on [0, 0.3] will effectively suppress dynamic filtering, as a flat minimum r^2 filter of 0.3 is applied to all variants
+
+## Future Development Targets
+- [ ] report inclusion list of variants passing filter
 
 ## Version History
 
