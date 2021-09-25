@@ -1,7 +1,8 @@
 /*!
   \file main.cc
   \brief main entry/exit for software. interprets command line arguments,
-  dispatches tasks, exits \copyright Released under the MIT License. Copyright
+  dispatches tasks, exits
+  \copyright Released under the MIT License. Copyright
   2021 Lightning Auriga
  */
 
@@ -17,6 +18,7 @@
 #include <utility>
 #include <vector>
 #include "imputed-data-dynamic-threshold/cargs.h"
+#include "imputed-data-dynamic-threshold/r2_bins.h"
 
 /*!
   \brief main program implementation
