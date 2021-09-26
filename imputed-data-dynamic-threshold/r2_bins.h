@@ -80,6 +80,44 @@ class r2_bin {
     \return whether all entries in the object are (approximately) equal
    */
   bool operator==(const r2_bin &obj) const;
+  /*!
+    \brief test for inequality between objects of this class
+    @param obj object to compare to *this
+    \return whether any entry in this object is not equal to the corresponding
+    one
+   */
+  bool operator!=(const r2_bin &obj) const;
+  /*!
+    \brief get stored bin minimum frequency value
+    \return bin minimum frequency value
+   */
+  const double &get_bin_min() const { return _bin_min; }
+  /*!
+    \brief get stored bin maximum frequency value
+    \return bin maximum frequency value
+   */
+  const double &get_bin_max() const { return _bin_max; }
+  /*!
+    \brief get stored r2 data vector
+    \return stored r2 data vector
+   */
+  const std::vector<float> &get_data() const { return _data; }
+  /*!
+    \brief get stored running r2 sum
+    \return stored running r2 sum
+   */
+  const double &get_total() const { return _total; }
+  /*!
+    \brief get total number of stored datapoints
+    \return total number of stored datapoints
+  */
+  unsigned get_total_count() const { return _total_count; }
+  /*!
+    \brief get number of datapoints remaining after current filter
+    \return number of datapoints remaining after current filter
+   */
+  unsigned get_filtered_count() const { return _filtered_count; }
+  friend class r2_bin_test;
 
  protected:
   double _bin_min;           //!< minimum MAF in this bin, exclusive
@@ -143,6 +181,13 @@ class r2_bins {
     \return whether all entries in the object are (approximately) equal
    */
   bool operator==(const r2_bins &obj) const;
+  /*!
+    \brief test for inequality between objects of this class
+    @param obj object to compare to *this
+    \return whether any entry in this object is not equal to the corresponding
+    one
+   */
+  bool operator!=(const r2_bins &obj) const;
 
  protected:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation

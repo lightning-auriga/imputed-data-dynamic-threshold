@@ -68,6 +68,11 @@ bool imputed_data_dynamic_threshold::r2_bin::operator==(
   return true;
 }
 
+bool imputed_data_dynamic_threshold::r2_bin::operator!=(
+    const r2_bin &obj) const {
+  return !(*this == obj);
+}
+
 void imputed_data_dynamic_threshold::r2_bins::set_bin_boundaries(
     const std::vector<double> &boundaries) {
   if (boundaries.size() < 2) {
@@ -195,4 +200,9 @@ bool imputed_data_dynamic_threshold::r2_bins::operator==(
       return false;
   }
   return true;
+}
+
+bool imputed_data_dynamic_threshold::r2_bins::operator!=(
+    const r2_bins &obj) const {
+  return !(*this == obj);
 }
