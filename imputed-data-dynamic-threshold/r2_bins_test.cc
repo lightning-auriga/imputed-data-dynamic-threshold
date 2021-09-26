@@ -1,0 +1,240 @@
+/*!
+  \file r2_bins_test.cc
+  \brief implementations for r2_bins class
+  \copyright Released under the MIT License. Copyright
+  2021 Lightning Auriga
+ */
+
+#include "imputed-data-dynamic-threshold/r2_bins_test.h"
+
+void imputed_data_dynamic_threshold::r2_bins_test::setUp() {
+  // nothing to do at the moment
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::tearDown() {
+  // nothing to do at the moment
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_default_constructor() {
+  r2_bins a;
+  std::vector<r2_bin> vec;
+  std::map<double, unsigned> m;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins default constructor: data", a._bins == vec);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins default constructor: _bin_lower_bounds",
+                         a._bin_lower_bounds == m);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins default constructor: _bin_upper_bounds",
+                         a._bin_upper_bounds == m);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_copy_constructor() {
+  r2_bins a;
+  a._bins.push_back(r2_bin());
+  a._bin_lower_bounds[0.1] = 2;
+  a._bin_upper_bounds[0.2] = 40;
+  r2_bins b(a);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins copy constructor: _bins",
+                         a.get_bins() == b.get_bins());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins copy constructor: _bin_lower_bounds",
+                         a.get_bin_lower_bounds() == b.get_bin_lower_bounds());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins copy constructor: _bin_upper_bounds",
+                         a.get_bin_upper_bounds() == b.get_bin_upper_bounds());
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_set_bin_boundaries() {
+  r2_bins a, b;
+  std::vector<double> bounds;
+  bounds.push_back(0.001);
+  bounds.push_back(0.03);
+  bounds.push_back(0.5);
+  a.set_bin_boundaries(bounds);
+  b._bin_lower_bounds[0.001] = 0;
+  b._bin_lower_bounds[0.03] = 1;
+  b._bin_upper_bounds[0.03] = 0;
+  b._bin_upper_bounds[0.5] = 1;
+  r2_bin bin;
+  bin.set_bin_bounds(0.001, 0.03);
+  b._bins.push_back(bin);
+  bin.set_bin_bounds(0.03, 0.5);
+  b._bins.push_back(bin);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins set_bin_boundaries", a == b);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_find_maf_bin() {
+  r2_bins a;
+  a._bin_lower_bounds[0.1] = 0;
+  a._bin_lower_bounds[0.2] = 1;
+  a._bin_upper_bounds[0.2] = 0;
+  a._bin_upper_bounds[0.5] = 1;
+  r2_bin bin;
+  bin.set_bin_bounds(0.1, 0.2);
+  a._bins.push_back(bin);
+  bin.set_bin_bounds(0.2, 0.5);
+  a._bins.push_back(bin);
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: below smallest bin", 2u,
+                               a.find_maf_bin(0.001));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: smallest bin lower bound",
+                               2u, a.find_maf_bin(0.1));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: smallest bin", 0u,
+                               a.find_maf_bin(0.15));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: smallest bin upper bound",
+                               0u, a.find_maf_bin(0.2));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: largest bin", 1u,
+                               a.find_maf_bin(0.25));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: largest bin upper bound",
+                               1u, a.find_maf_bin(0.5));
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins find_maf_bin: above largest bin", 2u,
+                               a.find_maf_bin(0.55));
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_load_info_file() {
+  r2_bins a, b;
+  std::vector<double> bounds;
+  bounds.push_back(0.001);
+  bounds.push_back(0.03);
+  bounds.push_back(0.5);
+  a.set_bin_boundaries(bounds);
+  a.load_info_file("tests/r2_bins_test_example.info.gz");
+  b.set_bin_boundaries(bounds);
+  b._bins.at(1).add_value(0.44231f);
+  b._bins.at(0).add_value(0.99991f);
+  b._bins.at(1).add_value(0.34113f);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins load info file", a == b);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_compute_thresholds() {
+  r2_bins a, b;
+  r2_bin bin1, bin2;
+  a.compute_thresholds(0.65);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins compute_thresholds: without bins", a == b);
+  bin1.set_bin_bounds(0.1, 0.2);
+  bin1.add_value(0.5);
+  bin1.add_value(0.6);
+  bin1.add_value(0.7);
+  a._bins.push_back(bin1);
+  bin1.compute_threshold(0.65);
+  b._bins.push_back(bin1);
+  bin2.set_bin_bounds(0.2, 0.5);
+  bin2.add_value(0.5);
+  bin2.add_value(0.6);
+  bin2.add_value(0.7);
+  bin2.add_value(0.8);
+  a._bins.push_back(bin2);
+  bin2.compute_threshold(0.65);
+  b._bins.push_back(bin2);
+  a._bin_lower_bounds[0.1] = 0;
+  a._bin_lower_bounds[0.2] = 1;
+  a._bin_upper_bounds[0.2] = 0;
+  a._bin_upper_bounds[0.5] = 1;
+  b._bin_lower_bounds[0.1] = 0;
+  b._bin_lower_bounds[0.2] = 1;
+  b._bin_upper_bounds[0.2] = 0;
+  b._bin_upper_bounds[0.5] = 1;
+  a.compute_thresholds(0.65);
+  CPPUNIT_ASSERT_MESSAGE("r2_bins compute_thresholds, with bins", a == b);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_report_thresholds() {
+  r2_bins a;
+  r2_bin bin1, bin2;
+  std::ostringstream o1, o2;
+  a.report_thresholds(o1);
+  CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins report_thresholds: without bins",
+                               std::string("bin_min\tbin_max\ttotal_variants\t"
+                                           "threshold\tvariants_after_filter\t"
+                                           "proportion_passing\n"),
+                               o1.str());
+  bin1.set_bin_bounds(0.1, 0.2);
+  bin1.add_value(0.5);
+  bin1.add_value(0.6);
+  bin1.add_value(0.7);
+  bin1.add_value(0.8);
+  bin1.compute_threshold(0.66);
+  a._bins.push_back(bin1);
+  bin2.set_bin_bounds(0.2, 0.5);
+  bin2.add_value(0.5);
+  bin2.add_value(0.6);
+  bin2.add_value(0.7);
+  bin2.add_value(0.8);
+  bin2.add_value(0.8);
+  bin2.compute_threshold(0.66);
+  a._bins.push_back(bin2);
+  a._bin_lower_bounds[0.1] = 0;
+  a._bin_lower_bounds[0.2] = 1;
+  a._bin_upper_bounds[0.2] = 0;
+  a._bin_upper_bounds[0.5] = 1;
+  a.report_thresholds(o2);
+  CPPUNIT_ASSERT_EQUAL_MESSAGE(
+      "r2_bins report_thresholds: with bins",
+      std::string("bin_min\tbin_max\ttotal_variants\tthreshold\t"
+                  "variants_after_filter\tproportion_passing\n"
+                  "0.1\t0.2\t4\t0.6\t3\t0.75\n0.2\t0.5\t5\t0.5\t5\t1\n"),
+      o2.str());
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_equality_operator() {
+  r2_bins a, b;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: default", a == b);
+  a._bins.push_back(r2_bin());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: different length _bins", !(a == b));
+  b._bins.push_back(r2_bin());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: single bin", a == b);
+  a._bin_lower_bounds[0.1] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: uneven lower bounds", !(a == b));
+  b._bin_lower_bounds[0.1] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: single lower bound", a == b);
+  a._bin_upper_bounds[0.2] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: uneven upper bound", !(a == b));
+  b._bin_upper_bounds[0.2] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: single upper bound", a == b);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_inequality_operator() {
+  r2_bins a, b;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: default", !(a != b));
+  a._bins.push_back(r2_bin());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: different length _bins", a != b);
+  b._bins.push_back(r2_bin());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: single bin", !(a != b));
+  a._bin_lower_bounds[0.1] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: uneven lower bounds", a != b);
+  b._bin_lower_bounds[0.1] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: single lower bound", !(a != b));
+  a._bin_upper_bounds[0.2] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: uneven upper bound", a != b);
+  b._bin_upper_bounds[0.2] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins equality: single upper bound", !(a != b));
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_get_bins() {
+  r2_bins a;
+  std::vector<r2_bin> vec;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins get_bins empty vector", a.get_bins() == vec);
+  a._bins.push_back(r2_bin());
+  vec.push_back(r2_bin());
+  CPPUNIT_ASSERT_MESSAGE("r2_bins get_bins single entry vector",
+                         a.get_bins() == vec);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_get_bin_lower_bounds() {
+  r2_bins a;
+  std::map<double, unsigned> m;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins get_bin_lower_bounds empty map",
+                         a.get_bin_lower_bounds() == m);
+  a._bin_lower_bounds[0.1] = 0;
+  m[0.1] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins get_bin_lower_bounds single entry map",
+                         a.get_bin_lower_bounds() == m);
+}
+
+void imputed_data_dynamic_threshold::r2_bins_test::test_get_bin_upper_bounds() {
+  r2_bins a;
+  std::map<double, unsigned> m;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins get_bin_upper_bounds empty map",
+                         a.get_bin_upper_bounds() == m);
+  a._bin_upper_bounds[0.1] = 0;
+  m[0.1] = 0;
+  CPPUNIT_ASSERT_MESSAGE("r2_bins get_bin_upper_bounds single entry map",
+                         a.get_bin_upper_bounds() == m);
+}
+
+CPPUNIT_TEST_SUITE_REGISTRATION(imputed_data_dynamic_threshold::r2_bins_test);
