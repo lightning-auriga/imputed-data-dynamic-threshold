@@ -51,7 +51,13 @@ int main(int argc, char **argv) {
   bins.compute_thresholds(target_r2);
   std::cout << "reporting results to \"" << output_filename << "\""
             << std::endl;
-  bins.report_thresholds(output_filename);
+  std::ofstream output;
+  output.open(output_filename.c_str());
+  if (!output.is_open())
+    throw std::runtime_error("cannot write to file \"" + output_filename +
+                             "\"");
+  bins.report_thresholds(output);
+  output.close();
   std::cout << "all done woo!" << std::endl;
   return 0;
 }

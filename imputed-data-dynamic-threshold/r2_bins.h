@@ -172,9 +172,9 @@ class r2_bins {
   void compute_thresholds(const double &target);
   /*!
     \brief report computed bin r2 thresholds to file
-    @param filename name of file to which to report this information
+    @param out open write stream to which to report this information
    */
-  void report_thresholds(const std::string &filename) const;
+  void report_thresholds(std::ostream &out) const;
   /*!
     \brief test for equality between objects of this class
     @param obj object to compare to *this
@@ -188,6 +188,27 @@ class r2_bins {
     one
    */
   bool operator!=(const r2_bins &obj) const;
+  /*!
+    \brief get vector of r2_bin objects
+    \return vector of r2_bin objects
+   */
+  const std::vector<r2_bin> &get_bins() const { return _bins; }
+  /*!
+    \brief get mapping structure for bin lower bounds
+    \return mapping structure for bin lower bounds
+   */
+  const std::map<double, unsigned> &get_bin_lower_bounds() const {
+    return _bin_lower_bounds;
+  }
+  /*!
+    \brief get mapping structure for bin upper bounds
+    \return mapping structure for bin upper bounds
+  */
+  const std::map<double, unsigned> &get_bin_upper_bounds() const {
+    return _bin_upper_bounds;
+  }
+
+  friend class r2_bins_test;
 
  protected:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation

@@ -101,7 +101,13 @@ unsigned imputed_data_dynamic_threshold::r2_bins::find_maf_bin(
   --lower_finder;
   // handle: value comes after the end of the largest bin
   if (upper_finder == _bin_upper_bounds.end()) {
-    return _bins.size();
+    // handle the situation where the value is exactly the upper bound
+    // and double comparison happened to sort it above
+    if (fabs(maf - _bin_upper_bounds.rbegin()->first) < DBL_EPSILON) {
+      return _bin_upper_bounds.rbegin()->second;
+    } else {
+      return _bins.size();
+    }
   }
   // handle: somehow the thing that was found was inconsistent
   if (lower_finder->second != upper_finder->second) {
@@ -109,6 +115,16 @@ unsigned imputed_data_dynamic_threshold::r2_bins::find_maf_bin(
         "bin location failed for MAF = " + std::to_string(maf) + ": " +
         std::to_string(lower_finder->second) + " " +
         std::to_string(upper_finder->second));
+  }
+  // handle the situation that the value is exactly the lower bound
+  // and double comparison happened to sort it below
+  if (fabs(maf - lower_finder->first) < DBL_EPSILON) {
+    if (lower_finder == _bin_lower_bounds.begin()) {
+      return _bins.size();
+    } else {
+      --lower_finder;
+      return lower_finder->second;
+    }
   }
   // otherwise, this worked evidently
   return lower_finder->second;
@@ -129,7 +145,7 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
     while (gzgets(input, buffer, buffer_size - 1) != Z_NULL) {
       line = std::string(buffer);
       std::istringstream strm1(line);
-      if (!(strm1 >> id >> a0 >> a1 >> maf >> catcher >> catcher >> r2 >>
+      if (!(strm1 >> id >> a0 >> a1 >> catcher >> maf >> catcher >> r2 >>
             imputed)) {
         throw std::runtime_error("cannot parse info file \"" + filename +
                                  "\" line \"" + line + "\"");
@@ -164,18 +180,15 @@ void imputed_data_dynamic_threshold::r2_bins::compute_thresholds(
 }
 
 void imputed_data_dynamic_threshold::r2_bins::report_thresholds(
-    const std::string &filename) const {
-  std::ofstream output;
-  output.open(filename.c_str());
-  if (!(output << "bin_min\tbin_max\ttotal_variants\tthreshold\tvariants_after_"
-                  "filter\tproportion_passing"
-               << std::endl))
+    std::ostream &out) const {
+  if (!(out << "bin_min\tbin_max\ttotal_variants\tthreshold\tvariants_after_"
+               "filter\tproportion_passing"
+            << std::endl))
     throw std::runtime_error("cannot write to file; out of disk space?");
   for (std::vector<r2_bin>::const_iterator iter = _bins.begin();
        iter != _bins.end(); ++iter) {
-    iter->report_threshold(output);
+    iter->report_threshold(out);
   }
-  output.close();
 }
 
 bool imputed_data_dynamic_threshold::r2_bins::operator==(
