@@ -161,7 +161,8 @@ void imputed_data_dynamic_threshold::r2_bins_test::test_report_thresholds() {
   a.report_thresholds(o1);
   CPPUNIT_ASSERT_EQUAL_MESSAGE("r2_bins report_thresholds: without bins",
                                std::string("bin_min\tbin_max\ttotal_variants\t"
-                                           "threshold\tvariants_after_filter\t"
+                                           "threshold\taverage_after_filter\t"
+                                           "variants_after_filter\t"
                                            "proportion_passing\n"),
                                o1.str());
   bin1.set_bin_bounds(0.1, 0.2);
@@ -186,9 +187,10 @@ void imputed_data_dynamic_threshold::r2_bins_test::test_report_thresholds() {
   a.report_thresholds(o2);
   CPPUNIT_ASSERT_EQUAL_MESSAGE(
       "r2_bins report_thresholds: with bins",
-      std::string("bin_min\tbin_max\ttotal_variants\tthreshold\t"
-                  "variants_after_filter\tproportion_passing\n"
-                  "0.1\t0.2\t4\t0.6\t3\t0.75\n0.2\t0.5\t5\t0.5\t5\t1\n"),
+      std::string(
+          "bin_min\tbin_max\ttotal_variants\tthreshold\t"
+          "average_after_filter\tvariants_after_filter\tproportion_passing\n"
+          "0.1\t0.2\t4\t0.6\t0.7\t3\t0.75\n0.2\t0.5\t5\t0.5\t0.68\t5\t1\n"),
       o2.str());
 }
 
