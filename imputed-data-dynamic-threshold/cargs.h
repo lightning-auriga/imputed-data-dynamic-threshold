@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 
 namespace imputed_data_dynamic_threshold {
@@ -63,6 +64,16 @@ class cargs {
     flags
    */
   bool help() const { return compute_flag("help"); }
+
+  /*!
+    \brief determine whether the user has requested a second read pass
+    to report passing variant IDs
+    \return whether the user has requested this run mode
+
+    this flag is provided in case the number of total IDs in the input
+    info files (e.g. for TOPMed) exceeds a user's available RAM
+  */
+  bool second_pass() const { return compute_flag("second-pass"); }
 
   /*!
     \brief get boundaries of minor allele frequency bins for r2 calculations
@@ -114,7 +125,16 @@ class cargs {
     files are expected to be gzipped raw output from minimac4.
    */
   std::vector<std::string> get_info_gz_files() const {
-    return compute_parameter<std::vector<std::string> >("info-gz-files");
+    std::vector<std::string> vec;
+    vec = compute_parameter<std::vector<std::string> >("info-gz-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -i is not a regular file: \"" +
+                                 *iter + "\"");
+      }
+    }
+    return vec;
   }
 
   /*!
@@ -135,15 +155,33 @@ class cargs {
   }
 
   /*!
-    \brief get output filename
-    \return output filename from command line
+    \brief get output tabular result filename
+    \return output tabular result filename from command line
 
     output file will be unconditionally overwritten if present.
     target directory chain needs to exist, or the program
     will exit and complain of being unable to open the file.
    */
-  std::string get_output_filename() const {
-    return compute_parameter<std::string>("output-filename");
+  std::string get_output_table_filename() const {
+    if (_vm.count("output-table"))
+      return compute_parameter<std::string>("output-table");
+    return "";
+  }
+
+  /*!
+    \brief get output list filename
+    \return output list filename from command line
+
+    this parameter is optional, and controls the emission
+    of a variant list for variants passing thresholds. the
+    output list will be unconditionally overwritten if present.
+    target directory chain needs to exist, or the program
+    will exit and complain of being unable to open the file.
+   */
+  std::string get_output_list_filename() const {
+    if (_vm.count("output-list"))
+      return compute_parameter<std::string>("output-list");
+    return "";
   }
 
   /*!

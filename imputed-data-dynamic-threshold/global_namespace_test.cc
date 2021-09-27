@@ -34,20 +34,26 @@ void imputed_data_dynamic_threshold::global_namespace_test::test_from_string() {
 }
 
 void imputed_data_dynamic_threshold::global_namespace_test::
-    test_float_vector_equals() {
-  std::vector<float> a, b;
-  a.push_back(0.1f);
-  CPPUNIT_ASSERT_MESSAGE("float_vector_equals: self",
-                         float_vector_equals(a, a));
-  CPPUNIT_ASSERT_MESSAGE("float_vector_equals: catches size difference",
-                         !float_vector_equals(a, b));
-  b.push_back(0.1f);
-  CPPUNIT_ASSERT_MESSAGE("float_vector_equals: two identical length 1",
-                         float_vector_equals(a, b));
-  a.push_back(0.2f);
-  b.push_back(0.3f);
-  CPPUNIT_ASSERT_MESSAGE("float_vector_equals: mismatch in second spot",
-                         !float_vector_equals(a, b));
+    test_string_float_vector_equals() {
+  std::vector<std::pair<std::string, float> > a, b;
+  a.push_back(std::pair<std::string, float>("a", 0.1f));
+  CPPUNIT_ASSERT_MESSAGE("string_float_vector_equals: self",
+                         string_float_vector_equals(a, a));
+  CPPUNIT_ASSERT_MESSAGE("string_float_vector_equals: catches size difference",
+                         !string_float_vector_equals(a, b));
+  b.push_back(std::pair<std::string, float>("a", 0.1f));
+  CPPUNIT_ASSERT_MESSAGE("string_float_vector_equals: two identical length 1",
+                         string_float_vector_equals(a, b));
+  a.push_back(std::pair<std::string, float>("b", 0.2f));
+  b.push_back(std::pair<std::string, float>("b", 0.3f));
+  CPPUNIT_ASSERT_MESSAGE(
+      "string_float_vector_equals: mismatch in second spot, float",
+      !string_float_vector_equals(a, b));
+  a.at(1).first = "c";
+  b.at(1).second = 0.2f;
+  CPPUNIT_ASSERT_MESSAGE(
+      "string_float_vector_equals: mismatch in second spot, string",
+      !string_float_vector_equals(a, b));
 }
 
 void imputed_data_dynamic_threshold::global_namespace_test::test_files_equal() {
@@ -57,5 +63,24 @@ void imputed_data_dynamic_threshold::global_namespace_test::test_files_equal() {
                          !files_equal("Makefile", "configure"));
 }
 
+void imputed_data_dynamic_threshold::global_namespace_test::
+    test_string_float_less_than() {
+  CPPUNIT_ASSERT_MESSAGE("string_float_less_than: less than",
+                         string_float_less_than(std::make_pair("a", 0.1f),
+                                                std::make_pair("b", 0.2f)));
+  CPPUNIT_ASSERT_MESSAGE("string_float_less_than: not greater than",
+                         !string_float_less_than(std::make_pair("a", 0.2f),
+                                                 std::make_pair("b", 0.1f)));
+  CPPUNIT_ASSERT_MESSAGE("string_float_less_than: strict",
+                         !string_float_less_than(std::make_pair("a", 0.1f),
+                                                 std::make_pair("b", 0.1f)));
+  CPPUNIT_ASSERT_MESSAGE(
+      "string_float_less_than: nan",
+      !string_float_less_than(std::make_pair("a", 1.0f / 0.0f),
+                              std::make_pair("b", 1.0f / 0.0f)));
+}
+
+/// @cond registration
 CPPUNIT_TEST_SUITE_REGISTRATION(
     imputed_data_dynamic_threshold::global_namespace_test);
+/// @endcond

@@ -1,7 +1,6 @@
 name: imputed-data-dynamic-threshold-env
 dependencies:
   - boost-cpp
-  - yaml-cpp
   - git
 # required for commitizen
   - nodejs
