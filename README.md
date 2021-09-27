@@ -96,9 +96,8 @@ The following command line options are supported with this software:
 - `-s, --second-pass`: for variant list reporting: whether to skip ID storage during threshold calculation, and instead perform a second pass of all the info files once the thresholds have been computed. this substantially reduces the RAM usage of the software, at the cost of file parsing time.
 - `-r, --target-average-r2 [R2]`: desired average r<sup>2</sup> within bin after dynamic filtering. this should be a value on [0, 1], though values on [0, 0.3] will effectively suppress dynamic filtering, as a flat minimum r<sup>2</sup> filter of 0.3 is applied to all variants. defaults to `-r 0.9`.
 
-## Future Development Targets
-- [ ] report inclusion list of variants passing filter
-
 ## Version History
+
+27 09 2021: added variant list reporting; v1.0.0
 
 25 09 2021: project generated from cookiecutter template

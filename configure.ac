@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(imputed-data-dynamic-threshold, 0.1.0, lightning.auriga@gmail.com)
+AC_INIT(imputed-data-dynamic-threshold, 1.0.0, lightning.auriga@gmail.com)
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
 AM_SILENT_RULES([yes])
@@ -38,7 +38,6 @@ AX_CXX_COMPILE_STDCXX_17([ext], [mandatory])
 AX_BOOST_BASE([1.63.0])
 AX_BOOST_FILESYSTEM
 AX_BOOST_PROGRAM_OPTIONS
-AX_BOOST_IOSTREAMS
 
 AC_CHECK_LIB([m],[cos])
 
@@ -50,7 +49,7 @@ AC_CHECK_LIB([m],[cos])
 
 AC_CONFIG_FILES([
  Makefile
- imputed-data-dynamic-threshold-0.1.0.pc
+ imputed-data-dynamic-threshold-1.0.0.pc
 ])
 
 AC_OUTPUT
