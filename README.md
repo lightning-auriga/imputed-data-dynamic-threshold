@@ -99,6 +99,6 @@ The following command line options are supported with this software:
 
 ## Version History
 
-27 09 2021: added variant list reporting; v1.0.0
+27 09 2021: added variant list reporting; v1.0.2
 
 25 09 2021: project generated from cookiecutter template

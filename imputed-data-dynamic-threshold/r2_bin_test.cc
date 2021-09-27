@@ -149,7 +149,7 @@ void imputed_data_dynamic_threshold::r2_bin_test::test_report_threshold() {
   std::ostringstream o;
   a.report_threshold(o);
   CPPUNIT_ASSERT_EQUAL_MESSAGE("report_threshold: output stream",
-                               std::string("0.1\t0.2\t4\t0.5\t3\t0.75\n"),
+                               std::string("0.1\t0.2\t4\t0.5\t0.6\t3\t0.75\n"),
                                o.str());
   CPPUNIT_ASSERT_EQUAL_MESSAGE("report_threshold: stored threshold", 0.5f,
                                a._threshold);

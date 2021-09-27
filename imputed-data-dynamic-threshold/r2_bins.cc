@@ -45,17 +45,19 @@ float imputed_data_dynamic_threshold::r2_bin::report_stored_threshold() const {
 void imputed_data_dynamic_threshold::r2_bin::report_threshold(
     std::ostream &out) {
   // threshold defaults to 0.3; may be higher if anything was removed
-  _threshold = 0.3;
+  _threshold = 0.3f;
   if (_filtered_count) {
     _threshold = std::max<float>(
         _threshold, _data.at(_total_count - _filtered_count).second);
   } else {
     // if everything is filtered, there is no threshold that attains the desired
     // average, alas
-    _threshold = 1.0 / 0.0;
+    _threshold = 1.0f / 0.0f;
   }
   if (!(out << _bin_min << '\t' << _bin_max << '\t' << _total_count << '\t'
-            << _threshold << '\t' << _filtered_count << '\t'
+            << _threshold << '\t'
+            << (_total / static_cast<float>(_filtered_count)) << '\t'
+            << _filtered_count << '\t'
             << (static_cast<double>(_filtered_count) /
                 static_cast<double>(_total_count))
             << std::endl))
@@ -215,9 +217,10 @@ void imputed_data_dynamic_threshold::r2_bins::compute_thresholds(
 
 void imputed_data_dynamic_threshold::r2_bins::report_thresholds(
     std::ostream &out) {
-  if (!(out << "bin_min\tbin_max\ttotal_variants\tthreshold\tvariants_after_"
-               "filter\tproportion_passing"
-            << std::endl))
+  if (!(out
+        << "bin_min\tbin_max\ttotal_variants\tthreshold\taverage_after_filter"
+           "\tvariants_after_filter\tproportion_passing"
+        << std::endl))
     throw std::runtime_error("cannot write to file; out of disk space?");
   for (std::vector<r2_bin>::iterator iter = _bins.begin(); iter != _bins.end();
        ++iter) {
