@@ -18,6 +18,10 @@
 #include "imputed-data-dynamic-threshold/utilities.h"
 
 namespace imputed_data_dynamic_threshold {
+/*!
+  \class global_namespace_test
+  \brief test fixture for global functions in utilities.{cc,h}
+ */
 class global_namespace_test : public CppUnit::TestFixture {
   // macros to declare suite
   CPPUNIT_TEST_SUITE(global_namespace_test);

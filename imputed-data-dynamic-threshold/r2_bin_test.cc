@@ -257,4 +257,6 @@ void imputed_data_dynamic_threshold::r2_bin_test::test_get_filtered_count() {
                                a.get_filtered_count());
 }
 
+/// @cond registration
 CPPUNIT_TEST_SUITE_REGISTRATION(imputed_data_dynamic_threshold::r2_bin_test);
+/// @endcond

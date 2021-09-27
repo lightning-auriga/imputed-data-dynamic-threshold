@@ -20,6 +20,10 @@
 #include "imputed-data-dynamic-threshold/r2_bins.h"
 
 namespace imputed_data_dynamic_threshold {
+/*!
+  \class r2_bins_test
+  \brief text fixture for r2_bins tests
+ */
 class r2_bins_test : public CppUnit::TestFixture {
   // macros to declare suite
   CPPUNIT_TEST_SUITE(r2_bins_test);

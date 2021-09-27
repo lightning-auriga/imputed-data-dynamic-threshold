@@ -10,6 +10,11 @@
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+/*!
+  \brief simple test suite implementation
+  @param argc number of command line entries, including program name
+  @param argv array of command line entries
+ */
 int main(int argc, char **argv) {
   CppUnit::TextUi::TestRunner runner;
   CppUnit::TestFactoryRegistry &registry =

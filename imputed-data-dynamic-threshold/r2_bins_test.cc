@@ -313,4 +313,6 @@ void imputed_data_dynamic_threshold::r2_bins_test::test_get_bin_upper_bounds() {
                          a.get_bin_upper_bounds() == m);
 }
 
+/// @cond registration
 CPPUNIT_TEST_SUITE_REGISTRATION(imputed_data_dynamic_threshold::r2_bins_test);
+/// @endcond

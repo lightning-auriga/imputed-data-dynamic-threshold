@@ -80,5 +80,7 @@ void imputed_data_dynamic_threshold::global_namespace_test::
                               std::make_pair("b", 1.0f / 0.0f)));
 }
 
+/// @cond registration
 CPPUNIT_TEST_SUITE_REGISTRATION(
     imputed_data_dynamic_threshold::global_namespace_test);
+/// @endcond

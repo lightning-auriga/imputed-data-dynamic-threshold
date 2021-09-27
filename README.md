@@ -27,6 +27,7 @@ of those bin-specific filters.
   - [boost program_options](https://www.boost.org/doc/libs/1_75_0/doc/html/program_options.html)
   - [boost filesystem/system](https://www.boost.org/doc/libs/1_75_0/libs/filesystem/doc/index.htm)
   - [zlib](https://zlib.net)
+  - [doxygen](https://www.doxygen.nl/index.html) (only required for rebuilding inline documentation)
 
 ## Build
 
