@@ -144,7 +144,7 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
     gzgets(input, buffer, buffer_size - 1);
     while (gzgets(input, buffer, buffer_size - 1) != Z_NULL) {
       line = std::string(buffer);
-      if (*line.rbegin() != "\n") {
+      if (*line.rbegin() != '\n') {
         throw std::runtime_error(
             "load_info_file: line is longer than supported "
             "lazy buffer of 100KB; file bug report");
