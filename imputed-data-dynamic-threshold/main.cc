@@ -37,7 +37,9 @@ int main(int argc, char **argv) {
   std::vector<double> maf_bin_boundaries = ap.get_maf_bin_boundaries();
   std::vector<std::string> info_files = ap.get_info_gz_files();
   double target_r2 = ap.get_target_average_r2();
-  std::string output_filename = ap.get_output_filename();
+  std::string output_table_filename = ap.get_output_table_filename();
+  std::string output_list_filename = ap.get_output_list_filename();
+  bool second_pass = ap.second_pass();
   imputed_data_dynamic_threshold::r2_bins bins;
   std::cout << "creating MAF bins" << std::endl;
   bins.set_bin_boundaries(maf_bin_boundaries);
@@ -45,19 +47,38 @@ int main(int argc, char **argv) {
   for (std::vector<std::string>::const_iterator iter = info_files.begin();
        iter != info_files.end(); ++iter) {
     std::cout << "\t" << *iter << std::endl;
-    bins.load_info_file(*iter);
+    bins.load_info_file(*iter, !second_pass);
   }
   std::cout << "computing bin-specific r2 thresholds" << std::endl;
   bins.compute_thresholds(target_r2);
-  std::cout << "reporting results to \"" << output_filename << "\""
-            << std::endl;
+  std::cout << "reporting tabular results to \"" << output_table_filename
+            << "\"" << std::endl;
   std::ofstream output;
-  output.open(output_filename.c_str());
+  output.open(output_table_filename.c_str());
   if (!output.is_open())
-    throw std::runtime_error("cannot write to file \"" + output_filename +
+    throw std::runtime_error("cannot write to file \"" + output_table_filename +
                              "\"");
   bins.report_thresholds(output);
   output.close();
+  output.clear();
+  if (!output_list_filename.empty()) {
+    output.open(output_list_filename.c_str());
+    if (!output.is_open())
+      throw std::runtime_error("cannot write to file \"" +
+                               output_list_filename + "\"");
+    std::cout << "reporting passing variants to \"" << output_list_filename
+              << "\"" << std::endl;
+    if (second_pass) {
+      for (std::vector<std::string>::const_iterator iter = info_files.begin();
+           iter != info_files.end(); ++iter) {
+        bins.report_passing_variants(*iter, output);
+      }
+    } else {
+      bins.report_passing_variants(output);
+    }
+    output.close();
+    output.clear();
+  }
   std::cout << "all done woo!" << std::endl;
   return 0;
 }

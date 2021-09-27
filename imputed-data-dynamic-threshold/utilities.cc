@@ -33,3 +33,9 @@ bool imputed_data_dynamic_threshold::files_equal(const std::string &f1,
   if (it1 != end1 || it2 != end2) return false;
   return true;
 }
+
+bool imputed_data_dynamic_threshold::string_float_less_than(
+    const std::pair<std::string, float> &p1,
+    const std::pair<std::string, float> &p2) {
+  return p1.second > p2.second;
+}

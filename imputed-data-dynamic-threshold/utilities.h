@@ -14,6 +14,7 @@
 #include <iterator>
 #include <sstream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace imputed_data_dynamic_threshold {
@@ -50,6 +51,14 @@ bool float_vector_equals(const std::vector<float> &v1,
   @param f2 name of second file
  */
 bool files_equal(const std::string &f1, const std::string &f2);
+/*!
+  \brief compare pairs of strings and floats by their float entry
+  @param p1 first pair to compare
+  @param p2 second pair to compare
+  \return whether float entry of first pair is less than that of the second
+ */
+bool string_float_less_than(const std::pair<std::string, float> &p1,
+                            const std::pair<std::string, float> &p2);
 }  // namespace imputed_data_dynamic_threshold
 
 #endif  // IMPUTED_DATA_DYNAMIC_THRESHOLD_UTILITIES_H_

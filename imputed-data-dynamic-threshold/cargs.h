@@ -66,6 +66,16 @@ class cargs {
   bool help() const { return compute_flag("help"); }
 
   /*!
+    \brief determine whether the user has requested a second read pass
+    to report passing variant IDs
+    \return whether the user has requested this run mode
+
+    this flag is provided in case the number of total IDs in the input
+    info files (e.g. for TOPMed) exceeds a user's available RAM
+  */
+  bool second_pass() const { return compute_flag("second-pass"); }
+
+  /*!
     \brief get boundaries of minor allele frequency bins for r2 calculations
     \return MAF bin boundaries from command line
 
@@ -145,15 +155,29 @@ class cargs {
   }
 
   /*!
-    \brief get output filename
-    \return output filename from command line
+    \brief get output tabular result filename
+    \return output tabular result filename from command line
 
     output file will be unconditionally overwritten if present.
     target directory chain needs to exist, or the program
     will exit and complain of being unable to open the file.
    */
-  std::string get_output_filename() const {
-    return compute_parameter<std::string>("output-filename");
+  std::string get_output_table_filename() const {
+    return compute_parameter<std::string>("output-table");
+  }
+
+  /*!
+    \brief get output list filename
+    \return output list filename from command line
+
+    this parameter is optional, and controls the emission
+    of a variant list for variants passing thresholds. the
+    output list will be unconditionally overwritten if present.
+    target directory chain needs to exist, or the program
+    will exit and complain of being unable to open the file.
+   */
+  std::string get_output_list_filename() const {
+    return compute_parameter<std::string>("output-list");
   }
 
   /*!
