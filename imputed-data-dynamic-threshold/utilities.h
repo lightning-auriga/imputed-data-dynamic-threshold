@@ -37,14 +37,15 @@ value_type from_string(const std::string &s) {
 }
 
 /*!
-  \brief compare two float vectors for approximate equality
+  \brief compare two pair(string, float) vectors for approximate equality
   @param v1 first vector for comparison
   @param v2 second vector for comparison
 
   comparison permissible delta is FLT_EPSILON from cfloat
  */
-bool float_vector_equals(const std::vector<float> &v1,
-                         const std::vector<float> &v2);
+bool string_float_vector_equals(
+    const std::vector<std::pair<std::string, float> > &v1,
+    const std::vector<std::pair<std::string, float> > &v2);
 /*!
   \brief compare two files for exact identity
   @param f1 name of first file

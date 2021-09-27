@@ -24,7 +24,7 @@ void imputed_data_dynamic_threshold::r2_bin::compute_threshold(
     --_filtered_count;
     target_sum -= target;
   }
-  if (_filtered_count < _total_count) {
+  if (_filtered_count < _total_count && _filtered_count) {
     // check to be sure that reporting a particular filter doesn't imply
     // removing a few more variants that exactly tie that value
     while (fabs(_data.at(_total_count - _filtered_count).second -
@@ -167,10 +167,11 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
     gzgets(input, buffer, buffer_size - 1);
     while (gzgets(input, buffer, buffer_size - 1) != Z_NULL) {
       line = std::string(buffer);
-      if (*line.rbegin() != '\n') {
+      if (*line.rbegin() != '\n' && !gzeof(input)) {
         throw std::runtime_error(
             "load_info_file: line is longer than supported "
-            "lazy buffer of 100KB; file bug report");
+            "lazy buffer of 100KB: \"" +
+            line + "\"; file bug report");
       }
       std::istringstream strm1(line);
       if (!(strm1 >> id >> a0 >> a1 >> catcher >> maf >> catcher >> r2 >>
@@ -178,7 +179,12 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
         throw std::runtime_error("cannot parse info file \"" + filename +
                                  "\" line \"" + line + "\"");
       }
-      if (imputed.compare("Imputed")) continue;
+      if (imputed.compare("Imputed")) {
+        if (store_ids) {
+          _typed_variants.push_back(id);
+        }
+        continue;
+      }
       r2f = from_string<float>(r2);
       if (r2f < 0.3) continue;
       index = find_maf_bin(from_string<double>(maf));
@@ -224,6 +230,10 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
   for (std::vector<r2_bin>::const_iterator iter = _bins.begin();
        iter != _bins.end(); ++iter) {
     iter->report_passing_variants(out);
+  }
+  for (std::vector<std::string>::const_iterator iter = _typed_variants.begin();
+       iter != _typed_variants.end(); ++iter) {
+    out << *iter << '\n';
   }
 }
 

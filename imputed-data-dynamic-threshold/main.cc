@@ -71,6 +71,7 @@ int main(int argc, char **argv) {
     if (second_pass) {
       for (std::vector<std::string>::const_iterator iter = info_files.begin();
            iter != info_files.end(); ++iter) {
+        std::cout << "\t" << *iter << std::endl;
         bins.report_passing_variants(*iter, output);
       }
     } else {

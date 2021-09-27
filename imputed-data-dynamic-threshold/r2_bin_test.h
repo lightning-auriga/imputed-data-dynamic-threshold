@@ -27,6 +27,8 @@ class r2_bin_test : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_add_value);
   CPPUNIT_TEST(test_compute_threshold);
   CPPUNIT_TEST(test_report_threshold);
+  CPPUNIT_TEST(test_report_stored_threshold);
+  CPPUNIT_TEST(test_report_passing_variants);
   CPPUNIT_TEST(test_equality_operator);
   CPPUNIT_TEST(test_get_bin_min);
   CPPUNIT_TEST(test_get_bin_max);
@@ -47,6 +49,8 @@ class r2_bin_test : public CppUnit::TestFixture {
   void test_add_value();
   void test_compute_threshold();
   void test_report_threshold();
+  void test_report_stored_threshold();
+  void test_report_passing_variants();
   void test_equality_operator();
   void test_get_bin_min();
   void test_get_bin_max();

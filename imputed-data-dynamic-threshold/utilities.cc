@@ -7,11 +7,13 @@
 
 #include "imputed-data-dynamic-threshold/utilities.h"
 
-bool imputed_data_dynamic_threshold::float_vector_equals(
-    const std::vector<float> &v1, const std::vector<float> &v2) {
+bool imputed_data_dynamic_threshold::string_float_vector_equals(
+    const std::vector<std::pair<std::string, float> > &v1,
+    const std::vector<std::pair<std::string, float> > &v2) {
   if (v1.size() != v2.size()) return false;
   for (unsigned i = 0; i < v1.size(); ++i) {
-    if (fabs(v1.at(i) - v2.at(i)) >= FLT_EPSILON) return false;
+    if (v1.at(i).first.compare(v2.at(i).first)) return false;
+    if (fabs(v1.at(i).second - v2.at(i).second) >= FLT_EPSILON) return false;
   }
   return true;
 }
@@ -37,5 +39,5 @@ bool imputed_data_dynamic_threshold::files_equal(const std::string &f1,
 bool imputed_data_dynamic_threshold::string_float_less_than(
     const std::pair<std::string, float> &p1,
     const std::pair<std::string, float> &p2) {
-  return p1.second > p2.second;
+  return p1.second < p2.second;
 }

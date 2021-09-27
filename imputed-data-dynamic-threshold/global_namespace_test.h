@@ -22,8 +22,9 @@ class global_namespace_test : public CppUnit::TestFixture {
   // macros to declare suite
   CPPUNIT_TEST_SUITE(global_namespace_test);
   CPPUNIT_TEST(test_from_string);
-  CPPUNIT_TEST(test_float_vector_equals);
+  CPPUNIT_TEST(test_string_float_vector_equals);
   CPPUNIT_TEST(test_files_equal);
+  CPPUNIT_TEST(test_string_float_less_than);
   CPPUNIT_TEST_SUITE_END();
 
  public:
@@ -32,8 +33,9 @@ class global_namespace_test : public CppUnit::TestFixture {
   void tearDown();
   // test case methods
   void test_from_string();
-  void test_float_vector_equals();
+  void test_string_float_vector_equals();
   void test_files_equal();
+  void test_string_float_less_than();
 
  private:
 };

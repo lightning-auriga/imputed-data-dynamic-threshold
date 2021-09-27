@@ -168,7 +168,8 @@ class r2_bins {
   r2_bins(const r2_bins &obj)
       : _bins(obj._bins),
         _bin_lower_bounds(obj._bin_lower_bounds),
-        _bin_upper_bounds(obj._bin_upper_bounds) {}
+        _bin_upper_bounds(obj._bin_upper_bounds),
+        _typed_variants(obj._typed_variants) {}
   /*!
     \brief destructor
    */
@@ -258,6 +259,7 @@ class r2_bins {
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation
   std::map<double, unsigned> _bin_lower_bounds;  //!< MAF lower bound lookup
   std::map<double, unsigned> _bin_upper_bounds;  //!< MAF upper bound lookup
+  std::vector<std::string> _typed_variants;  //!< typed variants for reporting
 };
 }  // namespace imputed_data_dynamic_threshold
 

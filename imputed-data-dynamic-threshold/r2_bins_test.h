@@ -30,6 +30,7 @@ class r2_bins_test : public CppUnit::TestFixture {
   CPPUNIT_TEST(test_load_info_file);
   CPPUNIT_TEST(test_compute_thresholds);
   CPPUNIT_TEST(test_report_thresholds);
+
   CPPUNIT_TEST(test_equality_operator);
   CPPUNIT_TEST(test_inequality_operator);
   CPPUNIT_TEST(test_get_bins);
@@ -49,6 +50,8 @@ class r2_bins_test : public CppUnit::TestFixture {
   void test_load_info_file();
   void test_compute_thresholds();
   void test_report_thresholds();
+  void test_report_passing_variants_from_ram();
+  void test_report_passing_variants_from_file();
   void test_equality_operator();
   void test_inequality_operator();
   void test_get_bins();
