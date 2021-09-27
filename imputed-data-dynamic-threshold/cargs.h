@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+#include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 
 namespace imputed_data_dynamic_threshold {
@@ -114,7 +115,16 @@ class cargs {
     files are expected to be gzipped raw output from minimac4.
    */
   std::vector<std::string> get_info_gz_files() const {
-    return compute_parameter<std::vector<std::string> >("info-gz-files");
+    std::vector<std::string> vec;
+    vec = compute_parameter<std::vector<std::string> >("info-gz-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -i is not a regular file: \"" +
+                                 *iter + "\"");
+      }
+    }
+    return vec;
   }
 
   /*!
