@@ -10,7 +10,8 @@
 void imputed_data_dynamic_threshold::cargs::initialize_options() {
   _desc.add_options()("help,h", "emit this help message")(
       "output-table,o", boost::program_options::value<std::string>(),
-      "output summary table filename for reporting bin thresholds")(
+      "output summary table filename for reporting bin thresholds; if not "
+      "specified, report table to terminal")(
       "output-list,l", boost::program_options::value<std::string>(),
       "(optional) output variant list filename for reporting variants passing "
       "dynamic thresholds")("second-pass,s",

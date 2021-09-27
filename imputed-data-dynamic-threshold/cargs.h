@@ -163,7 +163,9 @@ class cargs {
     will exit and complain of being unable to open the file.
    */
   std::string get_output_table_filename() const {
-    return compute_parameter<std::string>("output-table");
+    if (_vm.count("output-table"))
+      return compute_parameter<std::string>("output-table");
+    return "";
   }
 
   /*!
@@ -177,7 +179,9 @@ class cargs {
     will exit and complain of being unable to open the file.
    */
   std::string get_output_list_filename() const {
-    return compute_parameter<std::string>("output-list");
+    if (_vm.count("output-list"))
+      return compute_parameter<std::string>("output-list");
+    return "";
   }
 
   /*!

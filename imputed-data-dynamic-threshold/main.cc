@@ -51,14 +51,18 @@ int main(int argc, char **argv) {
   }
   std::cout << "computing bin-specific r2 thresholds" << std::endl;
   bins.compute_thresholds(target_r2);
-  std::cout << "reporting tabular results to \"" << output_table_filename
-            << "\"" << std::endl;
   std::ofstream output;
-  output.open(output_table_filename.c_str());
-  if (!output.is_open())
-    throw std::runtime_error("cannot write to file \"" + output_table_filename +
-                             "\"");
-  bins.report_thresholds(output);
+  if (!output_table_filename.empty()) {
+    std::cout << "reporting tabular results to \"" << output_table_filename
+              << "\"" << std::endl;
+    output.open(output_table_filename.c_str());
+    if (!output.is_open())
+      throw std::runtime_error("cannot write to file \"" +
+                               output_table_filename + "\"");
+  } else {
+    std::cout << "reporting tabular results to terminal" << std::endl;
+  }
+  bins.report_thresholds(output_table_filename.empty() ? std::cout : output);
   output.close();
   output.clear();
   if (!output_list_filename.empty()) {
