@@ -140,6 +140,9 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
   float r2f = 0.0;
   try {
     input = gzopen(filename.c_str(), "rb");
+    if (!input) {
+      throw std::runtime_error("info file \"" + filename + "\" does not exist");
+    }
     buffer = new char[buffer_size];
     gzgets(input, buffer, buffer_size - 1);
     while (gzgets(input, buffer, buffer_size - 1) != Z_NULL) {

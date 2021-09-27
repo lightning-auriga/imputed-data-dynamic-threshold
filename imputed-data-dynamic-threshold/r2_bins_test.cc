@@ -99,6 +99,10 @@ void imputed_data_dynamic_threshold::r2_bins_test::test_load_info_file() {
   b._bins.at(0).add_value(0.99991f);
   b._bins.at(1).add_value(0.34113f);
   CPPUNIT_ASSERT_MESSAGE("r2_bins load info file", a == b);
+  CPPUNIT_ASSERT_THROW_MESSAGE(
+      "r2_bins info line exceeds 100KB",
+      a.load_info_file("tests/r2_bins_line_too_long.info.gz"),
+      std::runtime_error);
 }
 
 void imputed_data_dynamic_threshold::r2_bins_test::test_compute_thresholds() {
