@@ -1,0 +1,32 @@
+# This file is a template, and might need editing before it works on your project.
+# To contribute improvements to CI/CD templates, please follow the Development guide at:
+# https://docs.gitlab.com/ee/development/cicd/templates.html
+# This specific template is located at:
+# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/C++.gitlab-ci.yml
+
+# use the official gcc image, based on debian
+# can use verions as well, like gcc:5.2
+# see https://hub.docker.com/_/gcc/
+
+image: lightning-auriga/snakemake-gcc
+
+stages:
+  - build_and_test
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+build:
+  stage: build_and_test
+  # instead of calling g++ directly you can also use some build toolkit like make
+  # install the necessary build tools when needed
+  script:
+    - ./generate.bash
+    - ./configure --with-boost=$CONDA_PREFIX --with-boost-libdir=$CONDA_PREFIX/lib
+    - make -j2 CXXFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC "
+    - ./imputed-data-dynamic-threshold.out -h
+    - ./test-suite.out
+    - $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(find src \( -name "*gcda" -and -not -iname "*test*" \) -print | sed 's/gcda/cc/g') | tail -n 1
+  coverage: '/Lines executed:\d+\.?\d*% of .*/'
