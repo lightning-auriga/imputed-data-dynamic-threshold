@@ -28,5 +28,5 @@ build:
     - make -j2 CXXFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC "
     - ./imputed-data-dynamic-threshold.out -h
     - ./test-suite.out
-    - $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(find src \( -name "*gcda" -and -not -iname "*test*" \) -print | sed 's/gcda/cc/g') | tail -n 1
+    - $CONDA_PREFIX/bin/x86_64-conda-linux-gnu-gcov -r $(find imputed-data-dynamic-threshold \( -name "*gcda" -and -not -iname "*test*" \) -print | sed 's/gcda/cc/g') | tail -n 1
   coverage: '/Lines executed:\d+\.?\d*% of .*/'
