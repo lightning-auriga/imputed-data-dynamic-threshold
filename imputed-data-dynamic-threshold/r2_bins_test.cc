@@ -345,10 +345,10 @@ void imputed_data_dynamic_threshold::r2_bins_test::
   CPPUNIT_ASSERT_THROW_MESSAGE(
       "report_passing_variants from file: "
       "enforces call order",
-      a.report_passing_variants(good_file.string().c_str(), o0),
+      a.report_passing_variants(good_file.string().c_str(), "", o0),
       std::logic_error);
   a.report_thresholds(o1);
-  a.report_passing_variants("tests/r2_bins_test_example.info.gz", o2);
+  a.report_passing_variants("tests/r2_bins_test_example.info.gz", "", o2);
   CPPUNIT_ASSERT_EQUAL_MESSAGE(
       "report_passing_variants from file",
       std::string("chr1:3:G:A\nchr1:1:A:T\nchr1:6:A:C\nchr1:7:A:C\n"),

@@ -241,18 +241,46 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
 }
 
 void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
-    const std::string &filename, std::ostream &out) const {
+    const std::string &filename, const std::string &filter_files_dir,
+    std::ostream &out) const {
   gzFile input = 0;
+  gzFile output = 0;
   char *buffer = 0;
   unsigned buffer_size = 100000;
-  std::string line = "", id = "", catcher = "", r2 = "";
+  std::string line = "", id = "", catcher = "", r2 = "", out_line = "";
   double maf = 0.0;
   float r2f = 0.0f;
   unsigned bin_index = 0u;
+
+  bool emit_output = !filter_files_dir.empty();
+  boost::filesystem::path output_dir;
+  if (emit_output) {
+    // output directory need not initially exist
+    output_dir = boost::filesystem::path(filter_files_dir);
+    boost::filesystem::create_directory(output_dir);
+  }
   try {
     input = gzopen(filename.c_str(), "rb");
     if (!input)
       throw std::runtime_error("cannot read file \"" + filename + "\"");
+    if (emit_output) {
+      output_dir = output_dir / boost::filesystem::canonical(
+                                    boost::filesystem::path(filename))
+                                    .filename();
+      output = gzopen(output_dir.string().c_str(), "wb");
+      if (!output) {
+        throw std::runtime_error(
+            "cannot report filtered info file in second pass");
+      }
+      out_line =
+          "SNP\tREF(0)\tALT(1)\tALT_"
+          "Frq\tMAF\tAvgCall\tRsq\tGenotyped\tLooRsq\tEmpR\tEmpRsq\tDose0\tDose"
+          "1"
+          "\n";
+      if (gzputs(output, out_line.c_str()) < 0) {
+        throw std::runtime_error("cannot write to output info file, disk full");
+      }
+    }
     buffer = new char[buffer_size];
     gzgets(input, buffer, buffer_size - 1);
     while (gzgets(input, buffer, buffer_size - 1) != Z_NULL) {
@@ -269,18 +297,31 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
         if (bin_index < _bins.size()) {
           if (r2f >= _bins.at(bin_index).report_stored_threshold()) {
             out << id << '\n';
+            if (output && gzputs(output, line.c_str()) < 0) {
+              throw std::runtime_error(
+                  "cannot write to output info file, disk full");
+            }
           }
         }
       } else {
         out << id << '\n';
+        if (output && gzputs(output, line.c_str()) < 0) {
+          throw std::runtime_error(
+              "cannot write to output info file, disk full");
+        }
       }
     }
     gzclose(input);
     input = 0;
+    if (output) {
+      gzclose(output);
+      output = 0;
+    }
     delete[] buffer;
     buffer = 0;
   } catch (...) {
     if (input) gzclose(input);
+    if (output) gzclose(output);
     if (buffer) delete[] buffer;
   }
 }

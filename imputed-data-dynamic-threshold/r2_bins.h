@@ -20,6 +20,7 @@
 #include <utility>
 #include <vector>
 
+#include "boost/filesystem.hpp"
 #include "imputed-data-dynamic-threshold/utilities.h"
 
 namespace imputed_data_dynamic_threshold {
@@ -213,6 +214,8 @@ class r2_bins {
   /*!
     \brief report variants passing threshold
     @param filename name of info file
+    @param filter_files_dir optional directory for reporting filtered
+    info files
     @param out output stream for data reporting
 
     this function assumes variant IDs have not been stored during first
@@ -220,6 +223,7 @@ class r2_bins {
     simply report IDs that already pass the filters in the relevant bins
    */
   void report_passing_variants(const std::string &filename,
+                               const std::string &filter_files_dir,
                                std::ostream &out) const;
   /*!
     \brief test for equality between objects of this class
