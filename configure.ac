@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ([2.69])
-AC_INIT(imputed-data-dynamic-threshold, 1.0.2, lightning.auriga@gmail.com)
+AC_INIT(imputed-data-dynamic-threshold, 1.1.0, lightning.auriga@gmail.com)
 AC_CONFIG_AUX_DIR([.])
 AM_INIT_AUTOMAKE([-Wall -Werror subdir-objects])
 AM_SILENT_RULES([yes])
@@ -49,7 +49,7 @@ AC_CHECK_LIB([m],[cos])
 
 AC_CONFIG_FILES([
  Makefile
- imputed-data-dynamic-threshold-1.0.2.pc
+ imputed-data-dynamic-threshold-1.1.0.pc
 ])
 
 AC_OUTPUT

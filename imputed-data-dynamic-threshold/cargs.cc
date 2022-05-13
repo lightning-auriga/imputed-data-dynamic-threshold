@@ -18,6 +18,9 @@ void imputed_data_dynamic_threshold::cargs::initialize_options() {
                             "whether to pass through info files a second time "
                             "to report passing variant IDs, to save RAM "
                             "(default: no)")(
+      "filter-files,f", boost::program_options::value<std::string>(),
+      "(optional) output filtered info file directory; only possible if "
+      "second-pass mode is enabled (default: do not write filtered files)")(
       "target-average-r2,r",
       boost::program_options::value<double>()->default_value(0.9),
       "average r2 target for each minor allele frequency bin")(
