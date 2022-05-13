@@ -99,6 +99,11 @@ The following command line options are supported with this software:
 
 ## Version History
 
+XX 05 2022:
+  - add option to filter and write modified info files during second pass
+  - add/improve unit tests with cppunit
+  - v1.1.0
+
 27 09 2021: added variant list reporting; v1.0.2
 
 25 09 2021: project generated from cookiecutter template

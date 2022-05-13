@@ -76,6 +76,19 @@ class cargs {
   bool second_pass() const { return compute_flag("second-pass"); }
 
   /*!
+    \brief get optional output directory for filtered info files
+    \return optional output directory for filtered info files
+
+    this is an optional mode on top of second-pass mode that causes
+    filtered info files to be reported to an output directory under
+    the same filename as input
+   */
+  std::string get_filter_files_dir() const {
+    if (_vm.count("filter-files"))
+      return compute_parameter<std::string>("filter-files");
+    return "";
+  }
+  /*!
     \brief get boundaries of minor allele frequency bins for r2 calculations
     \return MAF bin boundaries from command line
 
