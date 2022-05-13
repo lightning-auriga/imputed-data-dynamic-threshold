@@ -8,11 +8,25 @@
 #include "imputed-data-dynamic-threshold/r2_bins_test.h"
 
 void imputed_data_dynamic_threshold::r2_bins_test::setUp() {
-  // nothing to do at the moment
+  // allocate temporary directory for test files
+  unsigned buffer_size =
+      std::filesystem::temp_directory_path().string().size() + 20;
+  _tmp_dir = new char[buffer_size];
+  strncpy(_tmp_dir,
+          (std::filesystem::temp_directory_path().string() + "/iddtRBTXXXXXX")
+              .c_str(),
+          buffer_size);
+  char *res = mkdtemp(_tmp_dir);
+  if (!res) {
+    throw std::runtime_error("r2_bins_test mkdtemp failed");
+  }
 }
 
 void imputed_data_dynamic_threshold::r2_bins_test::tearDown() {
-  // nothing to do at the moment
+  if (_tmp_dir) {
+    std::filesystem::remove_all(std::filesystem::path(_tmp_dir));
+    delete[] _tmp_dir;
+  }
 }
 
 void imputed_data_dynamic_threshold::r2_bins_test::test_default_constructor() {
@@ -99,7 +113,61 @@ void imputed_data_dynamic_threshold::r2_bins_test::test_load_info_file() {
   bounds.push_back(0.03);
   bounds.push_back(0.5);
   a.set_bin_boundaries(bounds);
-  a.load_info_file("tests/r2_bins_test_example.info.gz", true);
+  // create a test info file for load test
+  boost::filesystem::path tmpdir =
+      boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path good_file = tmpdir / "r2_bins_test_example.info.gz";
+  boost::filesystem::path bad_file = tmpdir / "r2_bins_line_too_long.info.gz";
+  gzFile output = NULL;
+  try {
+    output = gzopen(good_file.string().c_str(), "wb");
+    if (!output) {
+      throw std::runtime_error(
+          "r2_bins test_load_info_file: cannot write test file");
+    }
+    std::string line = "";
+    line =
+        "SNP\tREF(0)\tALT(1)\tALT_"
+        "Frq\tMAF\tAvgCall\tRsq\tGenotyped\tLooRsq\tEmpR\tEmpRsq\tDose0\tDose1"
+        "\n";
+    gzputs(output, line.c_str());
+    line = "chr1:1:A:T\tA\tT\t0.1\t0.1\t0.1\t0.44231\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:2:A:T\tA\tT\t0.1\t0.1\t0.1\t0.1\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line =
+        "chr1:3:G:A\tG\tA\t0.02\t0.02\t0.02\t0.99991\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:4:T:A\tT\tA\t0.4\t0.4\t0.4\t0.34113\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:5:A:T\tA\tT\t0.1\t0.1\t0.1\t0.1\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:6:A:C\tA\tC\t0.1\t0.1\t1.0\t1.0\tGenotyped\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:7:A:C\tA\tC\t0.1\t0.1\t1.0\t1.0\tGenotyped\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    gzclose(output);
+    output = NULL;
+    output = gzopen(bad_file.string().c_str(), "wb");
+    if (!output) {
+      throw std::runtime_error(
+          "r2_bins test_load_info_file: cannot write bad test file");
+    }
+    line =
+        "SNP\tREF(0)\tALT(1)\tALT_"
+        "Frq\tMAF\tAvgCall\tRsq\tGenotyped\tLooRsq\tEmpR\tEmpRsq\tDose0\tDose1"
+        "\n";
+    gzputs(output, line.c_str());
+    line = std::string(100010, 'c');
+    gzputs(output, line.c_str());
+    gzclose(output);
+    output = NULL;
+  } catch (...) {
+    if (output) gzclose(output);
+    throw;
+  }
+
+  a.load_info_file(good_file.string().c_str(), true);
   b.set_bin_boundaries(bounds);
   b._bins.at(1).add_value("chr1:1:A:T", 0.44231f);
   b._bins.at(0).add_value("chr1:3:G:A", 0.99991f);
@@ -109,10 +177,9 @@ void imputed_data_dynamic_threshold::r2_bins_test::test_load_info_file() {
   CPPUNIT_ASSERT_MESSAGE("r2_bins load info file, store IDs", a == b);
   CPPUNIT_ASSERT_THROW_MESSAGE(
       "r2_bins info line exceeds 100KB",
-      a.load_info_file("tests/r2_bins_line_too_long.info.gz", true),
-      std::runtime_error);
+      a.load_info_file(bad_file.string().c_str(), true), std::runtime_error);
   c.set_bin_boundaries(bounds);
-  c.load_info_file("tests/r2_bins_test_example.info.gz", false);
+  c.load_info_file(good_file.string().c_str(), false);
   d.set_bin_boundaries(bounds);
   d._bins.at(1).add_value("", 0.44231f);
   d._bins.at(0).add_value("", 0.99991f);
@@ -233,13 +300,52 @@ void imputed_data_dynamic_threshold::r2_bins_test::
   bounds.push_back(0.03);
   bounds.push_back(0.5);
   a.set_bin_boundaries(bounds);
-  a.load_info_file("tests/r2_bins_test_example.info.gz", false);
+  // create a test info file for load test
+  boost::filesystem::path tmpdir =
+      boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path good_file = tmpdir / "r2_bins_test_example.info.gz";
+  gzFile output = NULL;
+  try {
+    output = gzopen(good_file.string().c_str(), "wb");
+    if (!output) {
+      throw std::runtime_error(
+          "r2_bins test_report_passing_variants_from_file: cannot write test "
+          "file");
+    }
+    std::string line = "";
+    line =
+        "SNP\tREF(0)\tALT(1)\tALT_"
+        "Frq\tMAF\tAvgCall\tRsq\tGenotyped\tLooRsq\tEmpR\tEmpRsq\tDose0\tDose1"
+        "\n";
+    gzputs(output, line.c_str());
+    line = "chr1:1:A:T\tA\tT\t0.1\t0.1\t0.1\t0.44231\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:2:A:T\tA\tT\t0.1\t0.1\t0.1\t0.1\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line =
+        "chr1:3:G:A\tG\tA\t0.02\t0.02\t0.02\t0.99991\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:4:T:A\tT\tA\t0.4\t0.4\t0.4\t0.34113\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:5:A:T\tA\tT\t0.1\t0.1\t0.1\t0.1\tImputed\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:6:A:C\tA\tC\t0.1\t0.1\t1.0\t1.0\tGenotyped\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    line = "chr1:7:A:C\tA\tC\t0.1\t0.1\t1.0\t1.0\tGenotyped\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    gzclose(output);
+    output = NULL;
+  } catch (...) {
+    if (output) gzclose(output);
+    throw;
+  }
+  a.load_info_file(good_file.string().c_str(), false);
   a.compute_thresholds(0.42f);
   std::ostringstream o0, o1, o2;
   CPPUNIT_ASSERT_THROW_MESSAGE(
       "report_passing_variants from file: "
       "enforces call order",
-      a.report_passing_variants("tests/r2_bins_test_example.info.gz", o0),
+      a.report_passing_variants(good_file.string().c_str(), o0),
       std::logic_error);
   a.report_thresholds(o1);
   a.report_passing_variants("tests/r2_bins_test_example.info.gz", o2);

@@ -11,12 +11,15 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
 #include <cppunit/ui/text/TestRunner.h>
+#include <zlib.h>
 
 #include <cfloat>
 #include <cmath>
+#include <filesystem>
 #include <map>
 #include <string>
 #include <vector>
+#include "boost/filesystem.hpp"
 #include "imputed-data-dynamic-threshold/r2_bins.h"
 
 namespace imputed_data_dynamic_threshold {
@@ -63,6 +66,7 @@ class r2_bins_test : public CppUnit::TestFixture {
   void test_get_bin_upper_bounds();
 
  private:
+  char *_tmp_dir;
 };
 }  // namespace imputed_data_dynamic_threshold
 
