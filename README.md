@@ -101,7 +101,7 @@ The following command line options are supported with this software:
 
 XX 05 2022:
   - add option to filter and write modified info files during second pass
-  - add unit tests with cppunit
+  - add/improve unit tests with cppunit
   - v1.1.0
 
 27 09 2021: added variant list reporting; v1.0.2
