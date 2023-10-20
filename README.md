@@ -14,7 +14,24 @@ are selected for different minor allele frequency bins based on the desired
 per-bin post-filtering average r<sup>2</sup>. This package implements the calculation
 of those bin-specific filters.
 
-## Requirements
+## Installation
+
+There are two primary installation methods, depending on your needs.
+
+### With conda (recommended)
+
+  - If needed, [install mamba](https://mamba.readthedocs.io/en/latest/mamba-installation.html#mamba-install)
+  - Install the package with mamba:
+
+    `mamba create -n iddt -c https://raw.githubusercontent.com/lightning-auriga/conda-builds/default/conda-builds -c conda-forge imputed-data-dynamic-threshold`
+  - Activate the resulting environment:
+    
+    `mamba activate iddt`
+  - The tool should now be available as `imputed-data-dynamic-threshold.out`
+
+### Manual build
+
+#### Requirements
 
   - g++ >= 8.2.0
   - automake/autoconf
@@ -24,20 +41,20 @@ of those bin-specific filters.
   - pre-commit
   - associated linting tools for C++: cppcheck, clang-format
   - [boost headers](https://www.boost.org)
-  - [boost program_options](https://www.boost.org/doc/libs/1_75_0/doc/html/program_options.html)
-  - [boost filesystem/system](https://www.boost.org/doc/libs/1_75_0/libs/filesystem/doc/index.htm)
+  - [boost program_options](https://www.boost.org/doc/libs/1_82_0/doc/html/program_options.html)
+  - [boost filesystem/system](https://www.boost.org/doc/libs/1_82_0/libs/filesystem/doc/index.htm)
   - [zlib](https://zlib.net)
   - [doxygen](https://www.doxygen.nl/index.html) (only required for rebuilding inline documentation)
 
-## Build
+### Build
 
 By default, a build process involving a [conda](https://docs.conda.io/en/latest/) environment is supported.
 
-  - if you wish to use `conda` and it's not currently available, you can install it with the instructions [here](https://docs.conda.io/en/latest/miniconda.html)
+  - If needed, [install mamba](https://mamba.readthedocs.io/en/latest/mamba-installation.html#mamba-install)
   - navigate into your project directory (imputed-data-dynamic-threshold)
   - create the `conda` environment for installation as follows:
   
-     `conda env create -f environment.yaml`
+     `mamba env create -f environment.yaml`
   - activate the conda environment:
   
      `conda activate imputed-data-dynamic-threshold-env`
@@ -55,31 +72,21 @@ By default, a build process involving a [conda](https://docs.conda.io/en/latest/
      - note that this can also be run with `./generate.bash` inside the repo
   - run `configure`:
   
-	 `./configure --with-boost=/path/to/miniconda3/envs/imputed-data-dynamic-threshold-env --with-boost-libdir=/path/to/miniconda3/envs/imputed-data-dynamic-threshold-env/lib`
+	 `./configure --with-boost=${CONDA_PREFIX} --with-boost-libdir=${CONDA_PREFIX}/lib`
 
 	 - if you are planning on installing software to a local directory, run instead `./configure --prefix=/install/dir [...]`
 	 - periodically there are some incompatibility issues between `configure` and `conda`. if so, you may need to override
 	   some default locations detected by `configure`. for example, you might override the detected compiler with:
 	   `CC=gcc CXX=g++ ./configure [...]`
-  - run `make CPPFLAGS=""`
-	 - this is a non-standard `make` invocation. the reason this is included is because the project
-	   is configured to specifically use a `boost` installation in the accompanying `conda` environment.
-	   if you'd rather remove `boost` from the conda environment, or ignore it in favor of a system-wide
-	   `boost` installation, you can adjust the appropriate `configure` parameters accordingly
-	   and instead invoke `make` without any further variable overrides
-  - run `make check` to run any `TAP/automake` tests, or the placeholder
-     - if you run this command without compiling first, you will again need to override `CPPFLAGS`
-	   as follows: `make CPPFLAGS="" check`
-
+  - run `make`
+  - run optional `./test-suite.out` to run unit tests
   - if desired, run `make install`. if permissions issues are reported, see above for reconfiguring with `./configure --prefix`.
-     - as above, if you run installation without compiling first, you will again need to override `CPPFLAGS`
-	   as follows: `make CPPFLAGS="" check`
   
 ## Usage
 
 By default, the final compiled program can be run with
 
-`./imputed-data-dynamic-threshold.out`
+`imputed-data-dynamic-threshold.out`
 
 The following command line options are supported with this software:
 
@@ -98,6 +105,9 @@ The following command line options are supported with this software:
 - `-r, --target-average-r2 [R2]`: desired average r<sup>2</sup> within bin after dynamic filtering. this should be a value on [0, 1], though values on [0, 0.3] will effectively suppress dynamic filtering, as a flat minimum r<sup>2</sup> filter of 0.3 is applied to all variants. defaults to `-r 0.9`.
 
 ## Version History
+
+20 10 2023:
+  - update dusty old repo, assign license, and release
 
 XX 05 2022:
   - add option to filter and write modified info files during second pass
