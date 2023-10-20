@@ -49,7 +49,7 @@ AC_CHECK_LIB([m],[cos])
 
 AC_CONFIG_FILES([
  Makefile
- imputed-data-dynamic-threshold-1.1.0.pc
+ imputed-data-dynamic-threshold-1.1.1.pc
 ])
 
 AC_OUTPUT
