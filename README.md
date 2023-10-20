@@ -86,7 +86,7 @@ By default, a build process involving a [conda](https://docs.conda.io/en/latest/
 
 By default, the final compiled program can be run with
 
-`./imputed-data-dynamic-threshold.out`
+`imputed-data-dynamic-threshold.out`
 
 The following command line options are supported with this software:
 
