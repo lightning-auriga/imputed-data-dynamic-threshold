@@ -6,7 +6,7 @@ dependencies:
   - nodejs
   - pre-commit
   - cppcheck
-  - sarcasm::clang-format
+  - clang-format
 
 
   - libtool
