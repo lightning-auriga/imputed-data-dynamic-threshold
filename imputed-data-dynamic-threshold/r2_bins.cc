@@ -246,7 +246,7 @@ void imputed_data_dynamic_threshold::r2_bins::load_vcf_file(
         continue;
       }
       if (*ptr_r2 < 0.3) continue;
-      index = find_maf_bin(*ptr_maf);
+      index = find_maf_bin(*ptr_maf > 0.5 ? 1.0 - *ptr_maf : *ptr_maf);
       if (index < _bins.size()) {
         _bins.at(index).add_value(store_ids ? varid : "", *ptr_r2);
       }
