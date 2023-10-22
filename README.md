@@ -43,6 +43,7 @@ There are two primary installation methods, depending on your needs.
   - [boost headers](https://www.boost.org)
   - [boost program_options](https://www.boost.org/doc/libs/1_82_0/doc/html/program_options.html)
   - [boost filesystem/system](https://www.boost.org/doc/libs/1_82_0/libs/filesystem/doc/index.htm)
+  - [htslib](https://github.com/samtools/htslib)
   - [zlib](https://zlib.net)
   - [doxygen](https://www.doxygen.nl/index.html) (only required for rebuilding inline documentation)
 
