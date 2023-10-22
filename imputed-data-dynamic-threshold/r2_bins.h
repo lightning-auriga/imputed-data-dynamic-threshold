@@ -230,7 +230,7 @@ class r2_bins {
   /*!
     \brief report variants passing threshold
     @param filename name of info file
-    @param filter_files_dir optional directory for reporting filtered
+    @param filter_info_files_dir optional directory for reporting filtered
     info files
     @param out output stream for data reporting
 
@@ -239,7 +239,7 @@ class r2_bins {
     simply report IDs that already pass the filters in the relevant bins
    */
   void report_passing_variants(const std::string &filename,
-                               const std::string &filter_files_dir,
+                               const std::string &filter_info_files_dir,
                                std::ostream &out) const;
   /*!
     \brief test for equality between objects of this class

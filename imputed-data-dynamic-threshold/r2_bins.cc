@@ -305,7 +305,7 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
 }
 
 void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
-    const std::string &filename, const std::string &filter_files_dir,
+    const std::string &filename, const std::string &filter_info_files_dir,
     std::ostream &out) const {
   gzFile input = 0;
   gzFile output = 0;
@@ -316,11 +316,11 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
   float r2f = 0.0f;
   unsigned bin_index = 0u;
 
-  bool emit_output = !filter_files_dir.empty();
+  bool emit_output = !filter_info_files_dir.empty();
   boost::filesystem::path output_dir;
   if (emit_output) {
     // output directory need not initially exist
-    output_dir = boost::filesystem::path(filter_files_dir);
+    output_dir = boost::filesystem::path(filter_info_files_dir);
     boost::filesystem::create_directory(output_dir);
   }
   try {
