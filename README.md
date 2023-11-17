@@ -1,5 +1,9 @@
 # imputed-data-dynamic-threshold
 
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/lightning-auriga/imputed-data-dynamic-threshold/tree/default.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/lightning-auriga/imputed-data-dynamic-threshold/tree/default)
+
+[![codecov](https://codecov.io/gh/lightning-auriga/imputed-data-dynamic-threshold/graph/badge.svg?token=31FA25tWe9)](https://codecov.io/gh/lightning-auriga/imputed-data-dynamic-threshold)
+
 ## Brief Summary
 
 compute r2 threshold using Yun Li cleaning method

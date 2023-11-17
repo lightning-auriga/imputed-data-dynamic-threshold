@@ -10,8 +10,3 @@ test_suite_out_LDADD = $(BOOST_LDFLAGS) -lboost_program_options -lboost_system -
 
 dist_doc_DATA = README
 ACLOCAL_AMFLAGS = -I m4
-## TAP support
-TEST_LOG_DRIVER = env AM_TAP_AWK='$(AWK)' $(SHELL) \
-                  $(top_srcdir)/tap-driver.sh
-TESTS = tests/placeholder.test
-EXTRA_DIST = $(TESTS)
