@@ -207,6 +207,70 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
   }
 }
 
+void imputed_data_dynamic_threshold::r2_bins::load_vcf_file(
+    const std::string &filename, const std::string &r2_info_field,
+    const std::string &maf_info_field, const std::string &imputed_info_field,
+    bool store_ids) {
+  bcf_srs_t *sr = 0;
+  std::string varid = "";
+  float *ptr_r2 = 0, *ptr_maf = 0;
+  int n_r2 = 0, n_maf = 0, n_imputed = 0;
+  unsigned index = 0;
+  bool is_imputed = false;
+  try {
+    sr = bcf_sr_init();
+    hts_set_log_level(HTS_LOG_OFF);
+    if (!bcf_sr_add_reader(sr, filename.c_str())) {
+      throw std::runtime_error("r2_bins::load_vcf_file: " +
+                               std::string(bcf_sr_strerror(sr->errnum)));
+    }
+    hts_set_log_level(HTS_LOG_WARNING);
+    ptr_r2 = new float;
+    ptr_maf = new float;
+    while (bcf_sr_next_line(sr)) {
+      bcf_get_info_float(bcf_sr_get_header(sr, 0), bcf_sr_get_line(sr, 0),
+                         r2_info_field.c_str(), &ptr_r2, &n_r2);
+      bcf_get_info_float(bcf_sr_get_header(sr, 0), bcf_sr_get_line(sr, 0),
+                         maf_info_field.c_str(), &ptr_maf, &n_maf);
+      is_imputed =
+          bcf_get_info_flag(bcf_sr_get_header(sr, 0), bcf_sr_get_line(sr, 0),
+                            imputed_info_field.c_str(), NULL, &n_imputed);
+      if (store_ids) {
+        bcf_unpack(bcf_sr_get_line(sr, 0), BCF_UN_STR);
+        varid = std::string(bcf_sr_get_line(sr, 0)->d.id);
+      }
+      if (is_imputed) {
+        if (store_ids) {
+          _typed_variants.push_back(varid);
+        }
+        continue;
+      }
+      if (*ptr_r2 < 0.3) continue;
+      index = find_maf_bin(*ptr_maf > 0.5 ? 1.0 - *ptr_maf : *ptr_maf);
+      if (index < _bins.size()) {
+        _bins.at(index).add_value(store_ids ? varid : "", *ptr_r2);
+      }
+    }
+    delete ptr_r2;
+    ptr_r2 = 0;
+    delete ptr_maf;
+    ptr_maf = 0;
+    bcf_sr_destroy(sr);
+    sr = 0;
+  } catch (...) {
+    if (sr) {
+      bcf_sr_destroy(sr);
+    }
+    if (ptr_r2) {
+      delete ptr_r2;
+    }
+    if (ptr_maf) {
+      delete ptr_maf;
+    }
+    throw;
+  }
+}
+
 void imputed_data_dynamic_threshold::r2_bins::compute_thresholds(
     const double &target) {
   for (std::vector<r2_bin>::iterator iter = _bins.begin(); iter != _bins.end();
@@ -241,7 +305,7 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
 }
 
 void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
-    const std::string &filename, const std::string &filter_files_dir,
+    const std::string &filename, const std::string &filter_info_files_dir,
     std::ostream &out) const {
   gzFile input = 0;
   gzFile output = 0;
@@ -252,11 +316,11 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
   float r2f = 0.0f;
   unsigned bin_index = 0u;
 
-  bool emit_output = !filter_files_dir.empty();
+  bool emit_output = !filter_info_files_dir.empty();
   boost::filesystem::path output_dir;
   if (emit_output) {
     // output directory need not initially exist
-    output_dir = boost::filesystem::path(filter_files_dir);
+    output_dir = boost::filesystem::path(filter_info_files_dir);
     boost::filesystem::create_directory(output_dir);
   }
   try {

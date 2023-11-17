@@ -16,6 +16,7 @@
 #include <stdexcept>
 #include <string>
 #include <vector>
+
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 
@@ -83,9 +84,22 @@ class cargs {
     filtered info files to be reported to an output directory under
     the same filename as input
    */
-  std::string get_filter_files_dir() const {
-    if (_vm.count("filter-files"))
-      return compute_parameter<std::string>("filter-files");
+  std::string get_filter_info_files_dir() const {
+    if (_vm.count("filter-info-files"))
+      return compute_parameter<std::string>("filter-info-files");
+    return "";
+  }
+  /*!
+    \brief get optional output directory for filtered vcf files
+    \return optional output directory for filtered vcf files
+
+    this is an optional mode on top of second-pass mode that causes
+    filtered vcf files to be reported to an output directory under
+    the same filename as input
+   */
+  std::string get_filter_vcf_files_dir() const {
+    if (_vm.count("filter-vcf-files"))
+      return compute_parameter<std::string>("filter-vcf-files");
     return "";
   }
   /*!
@@ -148,6 +162,49 @@ class cargs {
       }
     }
     return vec;
+  }
+  /*!
+    \brief get vcf filenames for parsing
+    \return vcf filenames for parsing
+   */
+  std::vector<std::string> get_vcf_files() const {
+    std::vector<std::string> vec;
+    vec = compute_parameter<std::vector<std::string> >("vcf-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -v is not a regular file: \"" +
+                                 *iter + "\"");
+      }
+    }
+    return vec;
+  }
+
+  /*!
+    \brief get INFO tag in input vcfs for imputation r2
+    \return INFO tag in input vcfs for imputation r2
+   */
+  std::string get_vcf_info_r2_tag() const {
+    return compute_parameter<std::string>("vcf-info-r2-tag");
+  }
+  /*!
+    \brief get INFO tag in input vcfs for allele frequency
+    \return INFO tag in input vcfs for allele frequency
+   */
+  std::string get_vcf_info_af_tag() const {
+    return compute_parameter<std::string>("vcf-info-af-tag");
+  }
+  /*!
+    \brief get INFO tag in input vcfs for imputation indicator
+    \return INFO tag in input vcfs for imputation indicator
+
+    this is a binary indicator, such that its presence in an INFO field
+    means that the corresponding record is purely imputed, and not present
+    in the chip input data to imputation. chip input variants are ignored
+    for the purpose of the dynamic threshold.
+   */
+  std::string get_vcf_info_imputed_indicator() const {
+    return compute_parameter<std::string>("vcf-info-imputed-indicator");
   }
 
   /*!

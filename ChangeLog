@@ -1,0 +1,36 @@
+# Changelog
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [Unreleased]
+
+## [1.1.1]
+
+### Added
+
+- not exactly directly in the repo, but this one is the oldest version available in [my conda
+channel](https://github.com/lightning-auriga/conda-builds)
+
+### Changed
+
+- slightly improved documentation
+- updated various dependencies for the intervening few years
+
+## [1.1.0; oldest existing tag]
+
+### Added
+
+- support for minimac/imputation server-style info file parsing
+- configurable settings related to dynamic r2 thresholding
+
+
+
+[//]: # [Unreleased]
+
+[//]: # (- Added)
+[//]: # (- Changed)
+[//]: # (- Deprecated)
+[//]: # (- Removed)
+[//]: # (- Fixed)
+[//]: # (- Security)

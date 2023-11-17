@@ -9,6 +9,7 @@
 #define IMPUTED_DATA_DYNAMIC_THRESHOLD_R2_BINS_H_
 
 #include <zlib.h>
+
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
@@ -21,6 +22,7 @@
 #include <vector>
 
 #include "boost/filesystem.hpp"
+#include "htslib/synced_bcf_reader.h"
 #include "imputed-data-dynamic-threshold/utilities.h"
 
 namespace imputed_data_dynamic_threshold {
@@ -194,6 +196,20 @@ class r2_bins {
    */
   void load_info_file(const std::string &filename, bool store_ids);
   /*!
+    \brief load r2 and MAF data from VCF
+    @param filename name of vcf file to load
+    @param r2_info_field name of info field containing estimated r2
+    @param maf_info_field name of info field containing estimated allele
+    frequency; the frequency will automatically be adjusted to MAF if required
+    @param imputed_info_field name of info indicator of whether variant is
+    imputed
+    @param store_ids whether to store variant IDs for later reporting
+   */
+  void load_vcf_file(const std::string &filename,
+                     const std::string &r2_info_field,
+                     const std::string &maf_info_field,
+                     const std::string &imputed_info_field, bool store_ids);
+  /*!
     \brief compute bin-specific r2 thresholds
     @param target desired final per-bin average r2
    */
@@ -214,7 +230,7 @@ class r2_bins {
   /*!
     \brief report variants passing threshold
     @param filename name of info file
-    @param filter_files_dir optional directory for reporting filtered
+    @param filter_info_files_dir optional directory for reporting filtered
     info files
     @param out output stream for data reporting
 
@@ -223,7 +239,7 @@ class r2_bins {
     simply report IDs that already pass the filters in the relevant bins
    */
   void report_passing_variants(const std::string &filename,
-                               const std::string &filter_files_dir,
+                               const std::string &filter_info_files_dir,
                                std::ostream &out) const;
   /*!
     \brief test for equality between objects of this class

@@ -17,6 +17,7 @@
 #include <string>
 #include <utility>
 #include <vector>
+
 #include "imputed-data-dynamic-threshold/cargs.h"
 #include "imputed-data-dynamic-threshold/r2_bins.h"
 
@@ -40,9 +41,9 @@ int main(int argc, char **argv) {
   std::string output_table_filename = ap.get_output_table_filename();
   std::string output_list_filename = ap.get_output_list_filename();
   bool second_pass = ap.second_pass();
-  std::string filter_files_dir = "";
+  std::string filter_info_files_dir = "";
   if (second_pass) {
-    filter_files_dir = ap.get_filter_files_dir();
+    filter_info_files_dir = ap.get_filter_info_files_dir();
   }
   imputed_data_dynamic_threshold::r2_bins bins;
   std::cout << "creating MAF bins" << std::endl;
@@ -80,7 +81,7 @@ int main(int argc, char **argv) {
       for (std::vector<std::string>::const_iterator iter = info_files.begin();
            iter != info_files.end(); ++iter) {
         std::cout << "\t" << *iter << std::endl;
-        bins.report_passing_variants(*iter, filter_files_dir, output);
+        bins.report_passing_variants(*iter, filter_info_files_dir, output);
       }
     } else {
       bins.report_passing_variants(output);
