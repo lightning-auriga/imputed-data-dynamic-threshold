@@ -1,0 +1,42 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+
+# See: https://circleci.com/docs/2.0/configuration-reference
+version: 2.1
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
+
+jobs:
+  build_and_test:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
+    docker:
+      - image: condaforge/mambaforge:latest
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
+    steps:
+      - add_ssh_keys:
+          fingerprints:
+            - "82:36:a6:28:7b:85:be:1e:52:91:f1:6f:3a:4b:b5:d6"
+      - checkout
+      - run:
+          name: build_and_test
+          command: |
+            mamba install -c bioconda -c conda-forge -y curl gnupg boost-cpp zlib libtool automake autoconf make gxx cppunit
+            ./generate.bash
+            NM=/opt/conda/bin/x86_64-conda-linux-gnu-nm AR=/opt/conda/bin/x86_64-conda-linux-gnu-ar CC=/opt/conda/bin/x86_64-conda-linux-gnu-gcc CXX=/opt/conda/bin/x86_64-conda-linux-gnu-g++ ./configure --with-boost=/opt/conda --with-boost-libdir=/opt/conda/lib
+            make -j2 CXXFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC"
+            make -j2 check
+            find imputed-data-dynamic-threshold -name "*gcda" -delete
+            ./test-suite.out
+            /opt/conda/bin/x86_64-conda-linux-gnu-gcov -r $(ls imputed-data-dynamic-threshold/*gcda | awk '! /main/' | sed 's/gcda/cc/g')
+            curl -Os https://uploader.codecov.io/latest/linux/codecov
+            chmod +x codecov
+            ./codecov -R .
+
+
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
+workflows:
+  ci:
+    jobs:
+      - build_and_test
