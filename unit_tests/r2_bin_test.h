@@ -5,8 +5,8 @@
   2021 Lightning Auriga
  */
 
-#ifndef IMPUTED_DATA_DYNAMIC_THRESHOLD_R2_BIN_TEST_H_
-#define IMPUTED_DATA_DYNAMIC_THRESHOLD_R2_BIN_TEST_H_
+#ifndef UNIT_TESTS_R2_BIN_TEST_H_
+#define UNIT_TESTS_R2_BIN_TEST_H_
 
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/extensions/TestFactoryRegistry.h>
@@ -15,6 +15,7 @@
 #include <cfloat>
 #include <cmath>
 #include <string>
+
 #include "imputed-data-dynamic-threshold/r2_bins.h"
 
 namespace imputed_data_dynamic_threshold {
@@ -67,4 +68,4 @@ class r2_bin_test : public CppUnit::TestFixture {
 };
 }  // namespace imputed_data_dynamic_threshold
 
-#endif  // IMPUTED_DATA_DYNAMIC_THRESHOLD_R2_BIN_TEST_H_
+#endif  // UNIT_TESTS_R2_BIN_TEST_H_

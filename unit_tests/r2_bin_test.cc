@@ -5,7 +5,7 @@
   2021 Lightning Auriga
  */
 
-#include "imputed-data-dynamic-threshold/r2_bin_test.h"
+#include "unit_tests/r2_bin_test.h"
 
 void imputed_data_dynamic_threshold::r2_bin_test::setUp() {
   // nothing to do at the moment

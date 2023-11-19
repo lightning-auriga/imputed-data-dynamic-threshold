@@ -5,7 +5,7 @@
   2021 Lightning Auriga
  */
 
-#include "imputed-data-dynamic-threshold/global_namespace_test.h"
+#include "unit_tests/global_namespace_test.h"
 
 void imputed_data_dynamic_threshold::global_namespace_test::setUp() {
   // nothing to do at the moment

@@ -27,7 +27,7 @@ jobs:
             make -j2 CXXFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC"
             find imputed-data-dynamic-threshold -name "*gcda" -delete
             ./test-suite.out
-            /opt/conda/bin/x86_64-conda-linux-gnu-gcov -r $(ls imputed-data-dynamic-threshold/*gcda | awk '! /main/ && ! /test_suite/ && ! /_test/' | sed 's/gcda/cc/g')
+            /opt/conda/bin/x86_64-conda-linux-gnu-gcov -r $(ls imputed-data-dynamic-threshold/*gcda | awk '! /main/' | sed 's/gcda/cc/g')
             curl -Os https://uploader.codecov.io/latest/linux/codecov
             chmod +x codecov
             ./codecov -R .
