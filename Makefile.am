@@ -2,7 +2,7 @@ bin_PROGRAMS = imputed-data-dynamic-threshold.out test-suite.out
 
 AM_CXXFLAGS = $(BOOST_CPPFLAGS) -ggdb -Wall -std=c++17
 
-COMBINED_SOURCES = imputed-data-dynamic-threshold/cargs.cc imputed-data-dynamic-threshold/cargs.h imputed-data-dynamic-threshold/r2_bins.cc imputed-data-dynamic-threshold/r2_bins.h imputed-data-dynamic-threshold/utilities.cc imputed-data-dynamic-threshold/utilities.h
+COMBINED_SOURCES = imputed-data-dynamic-threshold/cargs.cc imputed-data-dynamic-threshold/cargs.h imputed-data-dynamic-threshold/executor.cc imputed-data-dynamic-threshold/executor.h imputed-data-dynamic-threshold/r2_bins.cc imputed-data-dynamic-threshold/r2_bins.h imputed-data-dynamic-threshold/utilities.cc imputed-data-dynamic-threshold/utilities.h
 COMBINED_LDADD = $(BOOST_LDFLAGS) -lboost_program_options -lboost_system -lboost_filesystem -lz -lhts
 
 imputed_data_dynamic_threshold_out_SOURCES = imputed-data-dynamic-threshold/main.cc $(COMBINED_SOURCES)
