@@ -10,8 +10,8 @@ imputed_data_dynamic_threshold_out_LDADD = $(COMBINED_LDADD)
 
 UNIT_TEST_SOURCES = unit_tests/global_namespace_test.cc unit_tests/global_namespace_test.h unit_tests/r2_bins_test.cc unit_tests/r2_bins_test.h unit_tests/r2_bin_test.cc unit_tests/r2_bin_test.h
 
-test_suite_out_SOURCES = unit_tests/test_suite.cc $(UNIT_TEST_SOURCES) $(COMBINED_SOURCES)
-test_suite_out_LDADD = $(COMBINED_LDADD) -lcppunit
+test_suite_out_SOURCES = $(UNIT_TEST_SOURCES) $(COMBINED_SOURCES)
+test_suite_out_LDADD = $(COMBINED_LDADD) -lgtest_main -lgtest -lpthread
 
 dist_doc_DATA = README
 ACLOCAL_AMFLAGS = -I m4

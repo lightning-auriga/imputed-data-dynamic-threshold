@@ -21,7 +21,7 @@ jobs:
       - run:
           name: build_and_test
           command: |
-            mamba install -c bioconda -c conda-forge -y curl gnupg boost-cpp zlib libtool automake autoconf make gxx cppunit htslib
+            mamba install -c bioconda -c conda-forge -y curl gnupg boost-cpp zlib libtool automake autoconf make gxx gtest gmock htslib
             ./generate.bash
             NM=/opt/conda/bin/x86_64-conda-linux-gnu-nm AR=/opt/conda/bin/x86_64-conda-linux-gnu-ar CC=/opt/conda/bin/x86_64-conda-linux-gnu-gcc CXX=/opt/conda/bin/x86_64-conda-linux-gnu-g++ ./configure --with-boost=/opt/conda --with-boost-libdir=/opt/conda/lib
             make -j2 CXXFLAGS=" --coverage -fprofile-arcs -ftest-coverage -fPIC"

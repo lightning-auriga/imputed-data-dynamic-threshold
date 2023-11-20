@@ -255,27 +255,95 @@ class r2_bins {
    */
   bool operator!=(const r2_bins &obj) const;
   /*!
-    \brief get vector of r2_bin objects
-    \return vector of r2_bin objects
+   * \brief get vector of r2_bin objects
+   * \return vector of r2_bin objects
+   *
+   * const version
    */
   const std::vector<r2_bin> &get_bins() const { return _bins; }
   /*!
+   * \brief get vector of r2_bin objects
+   * \return vector of r2_bin objects
+   *
+   * non-const version
+   */
+  std::vector<r2_bin> &get_bins() { return _bins; }
+  /*!
     \brief get mapping structure for bin lower bounds
     \return mapping structure for bin lower bounds
+
+    const version
    */
   const std::map<double, unsigned> &get_bin_lower_bounds() const {
     return _bin_lower_bounds;
   }
   /*!
+    \brief get mapping structure for bin lower bounds
+    \return mapping structure for bin lower bounds
+
+    non-const version
+   */
+  std::map<double, unsigned> &get_bin_lower_bounds() {
+    return _bin_lower_bounds;
+  }
+  /*!
     \brief get mapping structure for bin upper bounds
     \return mapping structure for bin upper bounds
+
+    const version
   */
   const std::map<double, unsigned> &get_bin_upper_bounds() const {
     return _bin_upper_bounds;
   }
-  friend class r2_bins_test;
+  /*!
+    \brief get mapping structure for bin upper bounds
+    \return mapping structure for bin upper bounds
 
- protected:
+    non-const version
+  */
+  std::map<double, unsigned> &get_bin_upper_bounds() {
+    return _bin_upper_bounds;
+  }
+  /*!
+   * \brief get vector of typed variants
+   * \return vector of typed variants, as strings
+   *
+   * const version
+   */
+  const std::vector<std::string> &get_typed_variants() const {
+    return _typed_variants;
+  }
+  /*!
+   * \brief get vector of typed variants
+   * \return vector of typed variants, as strings
+   *
+   * non-const version
+   */
+  std::vector<std::string> &get_typed_variants() { return _typed_variants; }
+  /*!
+   * \brief set bin data
+   * \param bins vector of precomputed r2_bin objects
+   * \param bin_lower_bounds computed lookup structure for bin lower bounds
+   * \param bin_upper_bounds computed lookup structure for bin upper bounds
+   *
+   * Note that this function is primarily intended for unit tests.
+   */
+  void set_bin_data(const std::vector<r2_bin> &bins,
+                    const std::map<double, unsigned> &bin_lower_bounds,
+                    const std::map<double, unsigned> &bin_upper_bounds) {
+    _bins = bins;
+    _bin_lower_bounds = bin_lower_bounds;
+    _bin_upper_bounds = bin_upper_bounds;
+  }
+  /*!
+   * \brief add a typed variant to this object's storage
+   * \param str new variant to add
+   */
+  void add_typed_variant(const std::string &str) {
+    _typed_variants.push_back(str);
+  }
+
+ private:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation
   std::map<double, unsigned> _bin_lower_bounds;  //!< MAF lower bound lookup
   std::map<double, unsigned> _bin_upper_bounds;  //!< MAF upper bound lookup
