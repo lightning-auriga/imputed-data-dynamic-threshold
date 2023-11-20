@@ -2,7 +2,7 @@
   \file r2_bin_test.cc
   \brief implementations for r2_bin class
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
  */
 
 #include "gtest/gtest.h"

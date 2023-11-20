@@ -2,7 +2,7 @@
   \file r2_bins_test.cc
   \brief implementations for r2_bins class
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
  */
 
 #include "unit_tests/r2_bins_test.h"

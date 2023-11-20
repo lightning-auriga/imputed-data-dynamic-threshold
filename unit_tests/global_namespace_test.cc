@@ -2,7 +2,7 @@
   \file global_namespace_test.cc
   \brief implementations for global function tests
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
  */
 
 #include "gtest/gtest.h"
