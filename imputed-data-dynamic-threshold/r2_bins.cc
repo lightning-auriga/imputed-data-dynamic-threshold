@@ -279,7 +279,7 @@ void imputed_data_dynamic_threshold::r2_bins::load_vcf_file(
         bcf_unpack(bcf_sr_get_line(sr, 0), BCF_UN_STR);
         varid = std::string(bcf_sr_get_line(sr, 0)->d.id);
       }
-      if (is_imputed) {
+      if (!is_imputed) {
         if (store_ids) {
           _typed_variants.push_back(varid);
         }
