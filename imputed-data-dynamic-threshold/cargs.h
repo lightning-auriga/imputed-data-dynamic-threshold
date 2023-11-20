@@ -32,21 +32,16 @@ class cargs {
     @param argc number of arguments including program name
     @param argv string array containing actual arguments
    */
-  cargs(int argc, char **argv) : _desc("Recognized options") {
-    initialize_options();
-    boost::program_options::store(
-        boost::program_options::parse_command_line(argc, argv, _desc), _vm);
-    boost::program_options::notify(_vm);
-  }
+  cargs(int argc, char **argv);
   /*!
     \brief copy constructor
     @param obj existing cargs object
    */
-  cargs(const cargs &obj) : _desc(obj._desc), _vm(obj._vm) {}
+  cargs(const cargs &obj);
   /*!
     \brief destructor
    */
-  ~cargs() throw() {}
+  ~cargs() throw();
 
   /*!
     \brief set user help documentation and default values for parameters as
@@ -64,7 +59,7 @@ class cargs {
     This test is separate from whether the user has run the software with no
     flags
    */
-  bool help() const { return compute_flag("help"); }
+  bool help() const;
 
   /*!
     \brief determine whether the user has requested a second read pass
@@ -74,7 +69,7 @@ class cargs {
     this flag is provided in case the number of total IDs in the input
     info files (e.g. for TOPMed) exceeds a user's available RAM
   */
-  bool second_pass() const { return compute_flag("second-pass"); }
+  bool second_pass() const;
 
   /*!
     \brief get optional output directory for filtered info files
@@ -84,11 +79,7 @@ class cargs {
     filtered info files to be reported to an output directory under
     the same filename as input
    */
-  std::string get_filter_info_files_dir() const {
-    if (_vm.count("filter-info-files"))
-      return compute_parameter<std::string>("filter-info-files");
-    return "";
-  }
+  std::string get_filter_info_files_dir() const;
   /*!
     \brief get optional output directory for filtered vcf files
     \return optional output directory for filtered vcf files
@@ -97,11 +88,7 @@ class cargs {
     filtered vcf files to be reported to an output directory under
     the same filename as input
    */
-  std::string get_filter_vcf_files_dir() const {
-    if (_vm.count("filter-vcf-files"))
-      return compute_parameter<std::string>("filter-vcf-files");
-    return "";
-  }
+  std::string get_filter_vcf_files_dir() const;
   /*!
     \brief get boundaries of minor allele frequency bins for r2 calculations
     \return MAF bin boundaries from command line
@@ -115,35 +102,7 @@ class cargs {
     (0.001, 0.005], (0.005, 0.01], (0.01, 0.03], (0.03, 0.05], (0.05, 0.5],
     according to doi:10.1002/gepi.21603.
    */
-  std::vector<double> get_maf_bin_boundaries() const {
-    std::string tag = "maf-bin-boundaries";
-    std::vector<double> res;
-    if (_vm.count(tag)) {
-      res = compute_parameter<std::vector<double> >(tag);
-      for (unsigned i = 0; i < res.size(); ++i) {
-        if (res.at(i) < 0.0 || res.at(i) > 0.5) {
-          throw std::runtime_error(
-              "invalid minor allele frequency "
-              "specified to --maf-bin-boundaries");
-        }
-        if (i > 0 && res.at(i) <= res.at(i - 1)) {
-          throw std::runtime_error(
-              "--maf-bin-boundaries: values are "
-              "interpreted as sequential MAF bin "
-              "limits and should be sorted in "
-              "strictly increasing order");
-        }
-      }
-    } else {
-      res.push_back(0.001);
-      res.push_back(0.005);
-      res.push_back(0.01);
-      res.push_back(0.03);
-      res.push_back(0.05);
-      res.push_back(0.5);
-    }
-    return res;
-  }
+  std::vector<double> get_maf_bin_boundaries() const;
 
   /*!
     \brief get info filenames for parsing
@@ -151,49 +110,23 @@ class cargs {
 
     files are expected to be gzipped raw output from minimac4.
    */
-  std::vector<std::string> get_info_gz_files() const {
-    std::vector<std::string> vec;
-    vec = compute_parameter<std::vector<std::string> >("info-gz-files");
-    for (std::vector<std::string>::const_iterator iter = vec.begin();
-         iter != vec.end(); ++iter) {
-      if (!boost::filesystem::is_regular_file(*iter)) {
-        throw std::runtime_error("argument of -i is not a regular file: \"" +
-                                 *iter + "\"");
-      }
-    }
-    return vec;
-  }
+  std::vector<std::string> get_info_gz_files() const;
   /*!
     \brief get vcf filenames for parsing
     \return vcf filenames for parsing
    */
-  std::vector<std::string> get_vcf_files() const {
-    std::vector<std::string> vec;
-    vec = compute_parameter<std::vector<std::string> >("vcf-files");
-    for (std::vector<std::string>::const_iterator iter = vec.begin();
-         iter != vec.end(); ++iter) {
-      if (!boost::filesystem::is_regular_file(*iter)) {
-        throw std::runtime_error("argument of -v is not a regular file: \"" +
-                                 *iter + "\"");
-      }
-    }
-    return vec;
-  }
+  std::vector<std::string> get_vcf_files() const;
 
   /*!
     \brief get INFO tag in input vcfs for imputation r2
     \return INFO tag in input vcfs for imputation r2
    */
-  std::string get_vcf_info_r2_tag() const {
-    return compute_parameter<std::string>("vcf-info-r2-tag");
-  }
+  std::string get_vcf_info_r2_tag() const;
   /*!
     \brief get INFO tag in input vcfs for allele frequency
     \return INFO tag in input vcfs for allele frequency
    */
-  std::string get_vcf_info_af_tag() const {
-    return compute_parameter<std::string>("vcf-info-af-tag");
-  }
+  std::string get_vcf_info_af_tag() const;
   /*!
     \brief get INFO tag in input vcfs for imputation indicator
     \return INFO tag in input vcfs for imputation indicator
@@ -203,9 +136,7 @@ class cargs {
     in the chip input data to imputation. chip input variants are ignored
     for the purpose of the dynamic threshold.
    */
-  std::string get_vcf_info_imputed_indicator() const {
-    return compute_parameter<std::string>("vcf-info-imputed-indicator");
-  }
+  std::string get_vcf_info_imputed_indicator() const;
 
   /*!
     \brief get target average r2 per bin
@@ -215,14 +146,7 @@ class cargs {
     unconditionally applied, so values on [0,0.3] will be
     automatically satisfied with a final threshold of 0.3.
    */
-  double get_target_average_r2() const {
-    double res = compute_parameter<double>("target-average-r2");
-    if (res < 0.0 || res > 1.0)
-      throw std::runtime_error(
-          "invalid r2 value provided to "
-          "--target-average-r2");
-    return res;
-  }
+  double get_target_average_r2() const;
 
   /*!
     \brief get output tabular result filename
@@ -232,11 +156,7 @@ class cargs {
     target directory chain needs to exist, or the program
     will exit and complain of being unable to open the file.
    */
-  std::string get_output_table_filename() const {
-    if (_vm.count("output-table"))
-      return compute_parameter<std::string>("output-table");
-    return "";
-  }
+  std::string get_output_table_filename() const;
 
   /*!
     \brief get output list filename
@@ -248,11 +168,7 @@ class cargs {
     target directory chain needs to exist, or the program
     will exit and complain of being unable to open the file.
    */
-  std::string get_output_list_filename() const {
-    if (_vm.count("output-list"))
-      return compute_parameter<std::string>("output-list");
-    return "";
-  }
+  std::string get_output_list_filename() const;
 
   /*!
     \brief find status of arbitrary flag
@@ -264,7 +180,7 @@ class cargs {
     to type out the custom access functions or want to allow dynamic
     specification from a config file.
    */
-  bool compute_flag(const std::string &tag) const { return _vm.count(tag); }
+  bool compute_flag(const std::string &tag) const;
   /*!
     \brief find value of arbitrary parameter
     @tparam value_type class to which the value should be cast
@@ -287,17 +203,14 @@ class cargs {
 
     Parameter should probably be std::cout or std::cerr at your preference.
    */
-  void print_help(std::ostream &out) {
-    if (!(out << _desc))
-      throw std::domain_error("cargs::print_help: unable to write to stream");
-  }
+  void print_help(std::ostream &out);
 
  private:
   /*!
     \brief default constructor
     \warning disabled
    */
-  cargs() { throw std::domain_error("cargs: do not use default constructor"); }
+  cargs();
   boost::program_options::options_description
       _desc;  //!< help documentation string
   boost::program_options::variables_map
