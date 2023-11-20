@@ -2,7 +2,7 @@
   \file utilities.h
   \brief general function utilities and templates
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
  */
 
 #ifndef IMPUTED_DATA_DYNAMIC_THRESHOLD_UTILITIES_H_

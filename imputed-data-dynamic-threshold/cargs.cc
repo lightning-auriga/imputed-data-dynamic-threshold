@@ -2,7 +2,7 @@
   \file cargs.cc
   \brief method implementation for command line argument parser class
   \copyright Released under the MIT License.
-  Copyright 2021 Lightning Auriga
+  Copyright 2023 Lightning Auriga
 */
 
 #include "imputed-data-dynamic-threshold/cargs.h"

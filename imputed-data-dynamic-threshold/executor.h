@@ -2,7 +2,7 @@
   \file executor.h
   \brief wrapped main execution of program for testing.
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
  */
 
 #ifndef IMPUTED_DATA_DYNAMIC_THRESHOLD_EXECUTOR_H_

@@ -4,7 +4,7 @@
  \author Lightning Auriga
  \note requires boost::program_options library + headers
  \copyright Released under the MIT License.
- Copyright 2021 Lightning Auriga
+ Copyright 2023 Lightning Auriga
 
  Thanks to
  https://www.boost.org/doc/libs/1_70_0/doc/html/program_options/tutorial.html#id-1.3.32.4.3

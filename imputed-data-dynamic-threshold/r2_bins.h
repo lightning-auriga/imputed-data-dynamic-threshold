@@ -2,7 +2,7 @@
   \file r2_bins.h
   \brief collect r2 data within MAF bins
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
  */
 
 #ifndef IMPUTED_DATA_DYNAMIC_THRESHOLD_R2_BINS_H_

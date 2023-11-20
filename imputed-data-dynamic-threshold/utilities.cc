@@ -2,7 +2,7 @@
   \file utilities.cc
   \brief implementations for global functions
   \copyright Released under the MIT License. Copyright
-  2021 Lightning Auriga
+  2023 Lightning Auriga
 */
 
 #include "imputed-data-dynamic-threshold/utilities.h"
