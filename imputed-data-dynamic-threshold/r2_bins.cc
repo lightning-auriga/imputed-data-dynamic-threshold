@@ -7,6 +7,25 @@
 
 #include "imputed-data-dynamic-threshold/r2_bins.h"
 
+namespace iddt = imputed_data_dynamic_threshold;
+
+iddt::r2_bin::r2_bin()
+    : _bin_min(0.0),
+      _bin_max(0.0),
+      _total(0.0),
+      _total_count(0u),
+      _filtered_count(0u),
+      _threshold(0.0f) {}
+iddt::r2_bin::r2_bin(const r2_bin &obj)
+    : _bin_min(obj._bin_min),
+      _bin_max(obj._bin_max),
+      _data(obj._data),
+      _total(obj._total),
+      _total_count(obj._total_count),
+      _filtered_count(obj._filtered_count),
+      _threshold(obj._threshold) {}
+iddt::r2_bin::~r2_bin() throw() {}
+
 void imputed_data_dynamic_threshold::r2_bin::add_value(const std::string &id,
                                                        const float &val) {
   _data.push_back(std::pair<std::string, float>(id, val));
@@ -94,7 +113,28 @@ bool imputed_data_dynamic_threshold::r2_bin::operator!=(
     const r2_bin &obj) const {
   return !(*this == obj);
 }
+void iddt::r2_bin::set_bin_bounds(const double &minimum,
+                                  const double &maximum) {
+  _bin_min = minimum;
+  _bin_max = maximum;
+}
+const double &iddt::r2_bin::get_bin_min() const { return _bin_min; }
+const double &iddt::r2_bin::get_bin_max() const { return _bin_max; }
+const std::vector<std::pair<std::string, float> > &iddt::r2_bin::get_data()
+    const {
+  return _data;
+}
+const double &iddt::r2_bin::get_total() const { return _total; }
+unsigned iddt::r2_bin::get_total_count() const { return _total_count; }
+unsigned iddt::r2_bin::get_filtered_count() const { return _filtered_count; }
 
+iddt::r2_bins::r2_bins() {}
+iddt::r2_bins::r2_bins(const r2_bins &obj)
+    : _bins(obj._bins),
+      _bin_lower_bounds(obj._bin_lower_bounds),
+      _bin_upper_bounds(obj._bin_upper_bounds),
+      _typed_variants(obj._typed_variants) {}
+iddt::r2_bins::~r2_bins() throw() {}
 void imputed_data_dynamic_threshold::r2_bins::set_bin_boundaries(
     const std::vector<double> &boundaries) {
   if (boundaries.size() < 2) {
@@ -417,4 +457,38 @@ bool imputed_data_dynamic_threshold::r2_bins::operator==(
 bool imputed_data_dynamic_threshold::r2_bins::operator!=(
     const r2_bins &obj) const {
   return !(*this == obj);
+}
+
+const std::vector<iddt::r2_bin> &iddt::r2_bins::get_bins() const {
+  return _bins;
+}
+std::vector<iddt::r2_bin> &iddt::r2_bins::get_bins() { return _bins; }
+const std::map<double, unsigned> &iddt::r2_bins::get_bin_lower_bounds() const {
+  return _bin_lower_bounds;
+}
+std::map<double, unsigned> &iddt::r2_bins::get_bin_lower_bounds() {
+  return _bin_lower_bounds;
+}
+const std::map<double, unsigned> &iddt::r2_bins::get_bin_upper_bounds() const {
+  return _bin_upper_bounds;
+}
+std::map<double, unsigned> &iddt::r2_bins::get_bin_upper_bounds() {
+  return _bin_upper_bounds;
+}
+const std::vector<std::string> &iddt::r2_bins::get_typed_variants() const {
+  return _typed_variants;
+}
+std::vector<std::string> &iddt::r2_bins::get_typed_variants() {
+  return _typed_variants;
+}
+void iddt::r2_bins::set_bin_data(
+    const std::vector<iddt::r2_bin> &bins,
+    const std::map<double, unsigned> &bin_lower_bounds,
+    const std::map<double, unsigned> &bin_upper_bounds) {
+  _bins = bins;
+  _bin_lower_bounds = bin_lower_bounds;
+  _bin_upper_bounds = bin_upper_bounds;
+}
+void iddt::r2_bins::add_typed_variant(const std::string &str) {
+  _typed_variants.push_back(str);
 }

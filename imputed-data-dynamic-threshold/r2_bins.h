@@ -35,29 +35,16 @@ class r2_bin {
   /*!
     \brief default constructor
   */
-  r2_bin()
-      : _bin_min(0.0),
-        _bin_max(0.0),
-        _total(0.0),
-        _total_count(0u),
-        _filtered_count(0u),
-        _threshold(0.0f) {}
+  r2_bin();
   /*!
     \brief copy constructor
     @param obj existing r2_bin object
    */
-  r2_bin(const r2_bin &obj)
-      : _bin_min(obj._bin_min),
-        _bin_max(obj._bin_max),
-        _data(obj._data),
-        _total(obj._total),
-        _total_count(obj._total_count),
-        _filtered_count(obj._filtered_count),
-        _threshold(obj._threshold) {}
+  r2_bin(const r2_bin &obj);
   /*!
     \brief destructor
    */
-  ~r2_bin() throw() {}
+  ~r2_bin() throw();
   /*!
     \brief record the MAF bounds of this bin
     @param minimum min MAF for this bin
@@ -66,10 +53,7 @@ class r2_bin {
     note that this is really just for recordkeeping,
     as this class does not enforce this restriction here
    */
-  void set_bin_bounds(const double &minimum, const double &maximum) {
-    _bin_min = minimum;
-    _bin_max = maximum;
-  }
+  void set_bin_bounds(const double &minimum, const double &maximum);
   /*!
     \brief add a variant r2 to existing aggregation
     @param id variant ID
@@ -116,35 +100,32 @@ class r2_bin {
     \brief get stored bin minimum frequency value
     \return bin minimum frequency value
    */
-  const double &get_bin_min() const { return _bin_min; }
+  const double &get_bin_min() const;
   /*!
     \brief get stored bin maximum frequency value
     \return bin maximum frequency value
    */
-  const double &get_bin_max() const { return _bin_max; }
+  const double &get_bin_max() const;
   /*!
     \brief get stored r2 data vector
     \return stored r2 data vector
    */
-  const std::vector<std::pair<std::string, float> > &get_data() const {
-    return _data;
-  }
+  const std::vector<std::pair<std::string, float> > &get_data() const;
   /*!
     \brief get stored running r2 sum
     \return stored running r2 sum
    */
-  const double &get_total() const { return _total; }
+  const double &get_total() const;
   /*!
     \brief get total number of stored datapoints
     \return total number of stored datapoints
   */
-  unsigned get_total_count() const { return _total_count; }
+  unsigned get_total_count() const;
   /*!
     \brief get number of datapoints remaining after current filter
     \return number of datapoints remaining after current filter
    */
-  unsigned get_filtered_count() const { return _filtered_count; }
-  friend class r2_bin_test;
+  unsigned get_filtered_count() const;
 
  protected:
   double _bin_min;  //!< minimum MAF in this bin, exclusive
@@ -163,20 +144,16 @@ class r2_bins {
   /*!
     \brief default constructor
    */
-  r2_bins() {}
+  r2_bins();
   /*!
     \brief copy constructor
     @param obj existing r2_bins object
    */
-  r2_bins(const r2_bins &obj)
-      : _bins(obj._bins),
-        _bin_lower_bounds(obj._bin_lower_bounds),
-        _bin_upper_bounds(obj._bin_upper_bounds),
-        _typed_variants(obj._typed_variants) {}
+  r2_bins(const r2_bins &obj);
   /*!
     \brief destructor
    */
-  ~r2_bins() throw() {}
+  ~r2_bins() throw();
   /*!
     \brief create MAF bins based on user-specified boundaries
     @param boundaries sequential min/max bounds for MAF bins
@@ -260,66 +237,56 @@ class r2_bins {
    *
    * const version
    */
-  const std::vector<r2_bin> &get_bins() const { return _bins; }
+  const std::vector<r2_bin> &get_bins() const;
   /*!
    * \brief get vector of r2_bin objects
    * \return vector of r2_bin objects
    *
    * non-const version
    */
-  std::vector<r2_bin> &get_bins() { return _bins; }
+  std::vector<r2_bin> &get_bins();
   /*!
     \brief get mapping structure for bin lower bounds
     \return mapping structure for bin lower bounds
 
     const version
    */
-  const std::map<double, unsigned> &get_bin_lower_bounds() const {
-    return _bin_lower_bounds;
-  }
+  const std::map<double, unsigned> &get_bin_lower_bounds() const;
   /*!
     \brief get mapping structure for bin lower bounds
     \return mapping structure for bin lower bounds
 
     non-const version
    */
-  std::map<double, unsigned> &get_bin_lower_bounds() {
-    return _bin_lower_bounds;
-  }
+  std::map<double, unsigned> &get_bin_lower_bounds();
   /*!
     \brief get mapping structure for bin upper bounds
     \return mapping structure for bin upper bounds
 
     const version
   */
-  const std::map<double, unsigned> &get_bin_upper_bounds() const {
-    return _bin_upper_bounds;
-  }
+  const std::map<double, unsigned> &get_bin_upper_bounds() const;
   /*!
     \brief get mapping structure for bin upper bounds
     \return mapping structure for bin upper bounds
 
     non-const version
   */
-  std::map<double, unsigned> &get_bin_upper_bounds() {
-    return _bin_upper_bounds;
-  }
+  std::map<double, unsigned> &get_bin_upper_bounds();
   /*!
    * \brief get vector of typed variants
    * \return vector of typed variants, as strings
    *
    * const version
    */
-  const std::vector<std::string> &get_typed_variants() const {
-    return _typed_variants;
-  }
+  const std::vector<std::string> &get_typed_variants() const;
   /*!
    * \brief get vector of typed variants
    * \return vector of typed variants, as strings
    *
    * non-const version
    */
-  std::vector<std::string> &get_typed_variants() { return _typed_variants; }
+  std::vector<std::string> &get_typed_variants();
   /*!
    * \brief set bin data
    * \param bins vector of precomputed r2_bin objects
@@ -330,18 +297,12 @@ class r2_bins {
    */
   void set_bin_data(const std::vector<r2_bin> &bins,
                     const std::map<double, unsigned> &bin_lower_bounds,
-                    const std::map<double, unsigned> &bin_upper_bounds) {
-    _bins = bins;
-    _bin_lower_bounds = bin_lower_bounds;
-    _bin_upper_bounds = bin_upper_bounds;
-  }
+                    const std::map<double, unsigned> &bin_upper_bounds);
   /*!
    * \brief add a typed variant to this object's storage
    * \param str new variant to add
    */
-  void add_typed_variant(const std::string &str) {
-    _typed_variants.push_back(str);
-  }
+  void add_typed_variant(const std::string &str);
 
  private:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation
