@@ -160,6 +160,33 @@ TEST_F(r2BinsTest, r2BinsLoadInfoFiles) {
   EXPECT_FALSE(a == c);
 }
 
+TEST_F(r2BinsTest, r2BinsLoadVcfFiles) {
+  iddt::r2_bins a, b, c, d;
+  std::vector<double> bounds;
+  bounds.push_back(0.001);
+  bounds.push_back(0.03);
+  bounds.push_back(0.5);
+  a.set_bin_boundaries(bounds);
+  // for simplicity, this uses a committed tiny vcf
+  boost::filesystem::path good_file = "unit_tests/test.vcf.gz";
+  a.load_vcf_file(good_file.string().c_str(), "DR2", "AF", "IMP", true);
+  b.set_bin_boundaries(bounds);
+  b.get_bins().at(1).add_value("chr1:1:A:T", 0.44231f);
+  b.get_bins().at(0).add_value("chr1:3:G:A", 0.99991f);
+  b.get_bins().at(1).add_value("chr1:4:T:A", 0.34113f);
+  b.get_typed_variants().push_back("chr1:6:A:C");
+  b.get_typed_variants().push_back("chr1:7:A:C");
+  EXPECT_TRUE(a == b);
+  c.set_bin_boundaries(bounds);
+  c.load_vcf_file(good_file.string().c_str(), "DR2", "AF", "IMP", false);
+  d.set_bin_boundaries(bounds);
+  d.get_bins().at(1).add_value("", 0.44231f);
+  d.get_bins().at(0).add_value("", 0.99991f);
+  d.get_bins().at(1).add_value("", 0.34113f);
+  EXPECT_TRUE(c == d);
+  EXPECT_FALSE(a == c);
+}
+
 TEST_F(r2BinsTest, r2BinsComputeThresholds) {
   iddt::r2_bins a, b;
   iddt::r2_bin bin1, bin2;
