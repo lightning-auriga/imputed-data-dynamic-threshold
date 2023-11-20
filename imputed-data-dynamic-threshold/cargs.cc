@@ -11,6 +11,7 @@ namespace iddt = imputed_data_dynamic_threshold;
 
 void imputed_data_dynamic_threshold::cargs::initialize_options() {
   _desc.add_options()("help,h", "emit this help message")(
+      "version", "emit program version and exit")(
       "output-table,o", boost::program_options::value<std::string>(),
       "output summary table filename for reporting bin thresholds; if not "
       "specified, report table to terminal")(
@@ -63,6 +64,8 @@ iddt::cargs::cargs(const cargs &obj) : _desc(obj._desc), _vm(obj._vm) {}
 iddt::cargs::~cargs() throw() {}
 
 void iddt::cargs::initialize_options();
+
+bool iddt::cargs::version() const { return compute_flag("version"); }
 
 bool iddt::cargs::help() const { return compute_flag("help"); }
 
@@ -168,4 +171,9 @@ void iddt::cargs::print_help(std::ostream &out) {
 
 iddt::cargs::cargs() {
   throw std::domain_error("cargs: do not use default constructor");
+}
+
+void iddt::cargs::print_version(std::ostream &out) {
+  if (!(out << IMPUTED_DATA_DYNAMIC_THRESHOLD_PACKAGE_STRING << std::endl))
+    throw std::domain_error("cargs::print_version: unable to write to stream");
 }

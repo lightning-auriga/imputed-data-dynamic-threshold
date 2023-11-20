@@ -19,6 +19,7 @@
 
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
+#include "imputed-data-dynamic-threshold/config.h"
 
 namespace imputed_data_dynamic_threshold {
 /*!
@@ -60,6 +61,12 @@ class cargs {
     flags
    */
   bool help() const;
+
+  /*!
+   * \brief determine whether the user has requested the program version
+   * \return whether the user has requested the program version
+   */
+  bool version() const;
 
   /*!
     \brief determine whether the user has requested a second read pass
@@ -204,6 +211,12 @@ class cargs {
     Parameter should probably be std::cout or std::cerr at your preference.
    */
   void print_help(std::ostream &out);
+
+  /*!
+   * \brief report version information to arbitrary output stream
+   * \param out stream to which to write version information
+   */
+  void print_version(std::ostream &out);
 
  private:
   /*!
