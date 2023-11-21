@@ -338,6 +338,97 @@ TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromFile) {
             o2.str());
 }
 
+TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromFileWithOutput) {
+  iddt::r2_bins a;
+  std::vector<double> bounds;
+  bounds.push_back(0.001);
+  bounds.push_back(0.03);
+  bounds.push_back(0.5);
+  a.set_bin_boundaries(bounds);
+  // create a test info file for load test
+  boost::filesystem::path tmpdir =
+      boost::filesystem::path(std::string(_tmp_dir));
+  boost::filesystem::path good_file = tmpdir / "r2_bins_test_example2.info.gz";
+  gzFile output = NULL;
+  try {
+    output = gzopen(good_file.string().c_str(), "wb");
+    if (!output) {
+      throw std::runtime_error(
+          "r2_bins test_report_passing_variants_from_file: cannot write test "
+          "file");
+    }
+    std::string line =
+        "SNP\tREF(0)\tALT(1)\tALT_Frq\tMAF\tAvgCall\tRsq\tGenotyped\t"
+        "LooRsq\tEmpR\tEmpRsq\tDose0\tDose1\n"
+        "chr1:1:A:T\tA\tT\t0.1\t0.1\t0.1\t0.44231\tImputed\t-\t-\t-\t-\t-\n"
+        "chr1:2:A:T\tA\tT\t0.1\t0.1\t0.1\t0.1\tImputed\t-\t-\t-\t-\t-\n"
+        "chr1:3:G:A\tG\tA\t0.02\t0.02\t0.02\t0.99991\tImputed\t-\t-\t-\t-\t-\n"
+        "chr1:4:T:A\tT\tA\t0.4\t0.4\t0.4\t0.34113\tImputed\t-\t-\t-\t-\t-\n"
+        "chr1:5:A:T\tA\tT\t0.1\t0.1\t0.1\t0.1\tImputed\t-\t-\t-\t-\t-\n"
+        "chr1:6:A:C\tA\tC\t0.1\t0.1\t1.0\t1.0\tGenotyped\t-\t-\t-\t-\t-\n"
+        "chr1:7:A:C\tA\tC\t0.1\t0.1\t1.0\t1.0\tGenotyped\t-\t-\t-\t-\t-\n";
+    gzputs(output, line.c_str());
+    gzclose(output);
+    output = NULL;
+  } catch (...) {
+    if (output) gzclose(output);
+    throw;
+  }
+  a.load_info_file(good_file.string().c_str(), false);
+  a.compute_thresholds(0.42f);
+  std::ostringstream o1, o2;
+  a.report_thresholds(o1);
+  boost::filesystem::path outdir = tmpdir / "resultsdir";
+  a.report_passing_variants(good_file.string(), outdir.string(), o2);
+  EXPECT_TRUE(boost::filesystem::exists(outdir));
+  EXPECT_TRUE(boost::filesystem::exists(outdir / good_file.filename()));
+  gzFile input = NULL;
+  char *buffer = NULL;
+  unsigned buffer_size = 10000;
+  std::string line = "", varid = "";
+  std::map<std::string, bool> expected_variants;
+  expected_variants["chr1:1:A:T"] = false;
+  expected_variants["chr1:3:G:A"] = false;
+  expected_variants["chr1:6:A:C"] = false;
+  expected_variants["chr1:7:A:C"] = false;
+  try {
+    input = gzopen((outdir / good_file.filename()).string().c_str(), "rb");
+    EXPECT_NE(input, nullptr);
+    buffer = new char[buffer_size];
+    if (gzgets(input, buffer, buffer_size) == Z_NULL) {
+      throw std::runtime_error("output gzFile " +
+                               (outdir / good_file.filename()).string() +
+                               " cannot read header");
+    }
+    line = std::string(buffer);
+    EXPECT_EQ(line.find("SNP"), 0);
+    while (gzgets(input, buffer, buffer_size) != Z_NULL) {
+      line = std::string(buffer);
+      std::istringstream strm1(line);
+      if (!(strm1 >> varid)) {
+        throw std::runtime_error("output gzFile " +
+                                 (outdir / good_file.filename()).string() +
+                                 " format error");
+      }
+      EXPECT_NE(expected_variants.find(varid), expected_variants.end());
+      expected_variants[varid] = true;
+    }
+    gzclose(input);
+    input = 0;
+    delete[] buffer;
+    buffer = 0;
+  } catch (...) {
+    if (input) delete input;
+    if (buffer) delete[] buffer;
+    throw;
+  }
+  for (std::map<std::string, bool>::const_iterator iter =
+           expected_variants.begin();
+       iter != expected_variants.end(); ++iter) {
+    EXPECT_TRUE(iter->second);
+  }
+}
+
 TEST_F(r2BinsTest, r2BinsEqualityOperator) {
   iddt::r2_bins a, b;
   EXPECT_EQ(a, b);
