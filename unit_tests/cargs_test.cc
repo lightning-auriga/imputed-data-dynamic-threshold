@@ -163,3 +163,16 @@ TEST_F(cargsTest, vcfModeBasicAccessors) {
   EXPECT_EQ(ap.get_vcf_info_imputed_indicator(), "imp");
   EXPECT_EQ(ap.get_filter_vcf_files_dir(), "outdir");
 }
+
+TEST_F(cargsTest, defaultFrequencyBins) {
+  iddt::cargs ap(_argvec4.size(), _argv4);
+  std::vector<double> observed_bins;
+  observed_bins = ap.get_maf_bin_boundaries();
+  EXPECT_EQ(observed_bins.size(), 6UL);
+  EXPECT_DOUBLE_EQ(observed_bins.at(0), 0.001);
+  EXPECT_DOUBLE_EQ(observed_bins.at(1), 0.005);
+  EXPECT_DOUBLE_EQ(observed_bins.at(2), 0.01);
+  EXPECT_DOUBLE_EQ(observed_bins.at(3), 0.03);
+  EXPECT_DOUBLE_EQ(observed_bins.at(4), 0.05);
+  EXPECT_DOUBLE_EQ(observed_bins.at(5), 0.5);
+}
