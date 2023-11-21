@@ -53,7 +53,8 @@ void imputed_data_dynamic_threshold::cargs::initialize_options() {
       "reference");
 }
 
-iddt::cargs::cargs(int argc, char **argv) : _desc("Recognized options") {
+iddt::cargs::cargs(int argc, const char **const argv)
+    : _desc("Recognized options") {
   initialize_options();
   boost::program_options::store(
       boost::program_options::parse_command_line(argc, argv, _desc), _vm);

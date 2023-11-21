@@ -33,7 +33,7 @@ class cargs {
     @param argc number of arguments including program name
     @param argv string array containing actual arguments
    */
-  cargs(int argc, char **argv);
+  cargs(int argc, const char **const argv);
   /*!
     \brief copy constructor
     @param obj existing cargs object
