@@ -8,7 +8,7 @@ COMBINED_LDADD = $(BOOST_LDFLAGS) -lboost_program_options -lboost_system -lboost
 imputed_data_dynamic_threshold_out_SOURCES = imputed-data-dynamic-threshold/main.cc $(COMBINED_SOURCES)
 imputed_data_dynamic_threshold_out_LDADD = $(COMBINED_LDADD)
 
-UNIT_TEST_SOURCES = unit_tests/global_namespace_test.cc unit_tests/global_namespace_test.h unit_tests/r2_bins_test.cc unit_tests/r2_bins_test.h unit_tests/r2_bin_test.cc unit_tests/r2_bin_test.h
+UNIT_TEST_SOURCES = unit_tests/cargs_test.cc unit_tests/cargs_test.h unit_tests/global_namespace_test.cc unit_tests/global_namespace_test.h unit_tests/r2_bins_test.cc unit_tests/r2_bins_test.h unit_tests/r2_bin_test.cc unit_tests/r2_bin_test.h
 
 test_suite_out_SOURCES = $(UNIT_TEST_SOURCES) $(COMBINED_SOURCES)
 test_suite_out_LDADD = $(COMBINED_LDADD) -lgtest_main -lgtest -lpthread
