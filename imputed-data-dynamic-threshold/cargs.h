@@ -20,6 +20,7 @@
 #include "boost/filesystem.hpp"
 #include "boost/program_options.hpp"
 #include "imputed-data-dynamic-threshold/config.h"
+#include "imputed-data-dynamic-threshold/utilities.h"
 
 namespace imputed_data_dynamic_threshold {
 /*!

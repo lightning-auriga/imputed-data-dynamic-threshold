@@ -29,7 +29,7 @@ void imputed_data_dynamic_threshold::cargs::initialize_options() {
       "(optional) output filtered vcf file directory; only possible if "
       "second-pass mode is enabled (default: do not write filtered vcf files)")(
       "target-average-r2,r",
-      boost::program_options::value<double>()->default_value(0.9),
+      boost::program_options::value<std::string>()->default_value("0.9"),
       "average r2 target for each minor allele frequency bin")(
       "vcf-files,v",
       boost::program_options::value<std::vector<std::string> >()->multitoken(),
@@ -145,7 +145,8 @@ std::string iddt::cargs::get_vcf_info_imputed_indicator() const {
   return compute_parameter<std::string>("vcf-info-imputed-indicator");
 }
 double iddt::cargs::get_target_average_r2() const {
-  double res = compute_parameter<double>("target-average-r2");
+  double res =
+      from_string<double>(compute_parameter<std::string>("target-average-r2"));
   if (res < 0.0 || res > 1.0)
     throw std::runtime_error(
         "invalid r2 value provided to "
