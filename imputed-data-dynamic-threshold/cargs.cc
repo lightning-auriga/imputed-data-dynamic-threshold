@@ -116,24 +116,28 @@ std::vector<double> iddt::cargs::get_maf_bin_boundaries() const {
 }
 std::vector<std::string> iddt::cargs::get_info_gz_files() const {
   std::vector<std::string> vec;
-  vec = compute_parameter<std::vector<std::string> >("info-gz-files");
-  for (std::vector<std::string>::const_iterator iter = vec.begin();
-       iter != vec.end(); ++iter) {
-    if (!boost::filesystem::is_regular_file(*iter)) {
-      throw std::runtime_error("argument of -i is not a regular file: \"" +
-                               *iter + "\"");
+  if (_vm.count("info-gz-files")) {
+    vec = compute_parameter<std::vector<std::string> >("info-gz-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -i is not a regular file: \"" +
+                                 *iter + "\"");
+      }
     }
   }
   return vec;
 }
 std::vector<std::string> iddt::cargs::get_vcf_files() const {
   std::vector<std::string> vec;
-  vec = compute_parameter<std::vector<std::string> >("vcf-files");
-  for (std::vector<std::string>::const_iterator iter = vec.begin();
-       iter != vec.end(); ++iter) {
-    if (!boost::filesystem::is_regular_file(*iter)) {
-      throw std::runtime_error("argument of -v is not a regular file: \"" +
-                               *iter + "\"");
+  if (_vm.count("vcf-files")) {
+    vec = compute_parameter<std::vector<std::string> >("vcf-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -v is not a regular file: \"" +
+                                 *iter + "\"");
+      }
     }
   }
   return vec;

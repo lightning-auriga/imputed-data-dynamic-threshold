@@ -34,6 +34,10 @@ int main(int argc, const char** const argv) {
   }
   std::vector<double> maf_bin_boundaries = ap.get_maf_bin_boundaries();
   std::vector<std::string> info_files = ap.get_info_gz_files();
+  if (info_files.empty()) {
+    throw std::runtime_error(
+        "at least one info file (-i) is currently required");
+  }
   double target_r2 = ap.get_target_average_r2();
   std::string output_table_filename = ap.get_output_table_filename();
   std::string output_list_filename = ap.get_output_list_filename();
