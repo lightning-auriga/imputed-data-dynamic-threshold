@@ -111,6 +111,39 @@ The following command line options are supported with this software:
 |--filter-vcf-files|placeholder; not yet supported.|
 |-r<br>--target-average-r2|desired average r<sup>2</sup> within bin after dynamic filtering. this should be a value on [0, 1], though values on [0, 0.3] will effectively suppress dynamic filtering, as a flat minimum r<sup>2</sup> filter of 0.3 is applied to all variants. defaults to `-r 0.9`.|
 
+
+## Use Cases
+
+### minimac imputation, compute thresholds only
+
+An arbitrary number of variant (info) files can be specified on the command line.
+
+```bash
+imputed-data-dynamic-threshold.out -i /path/to/chr*.info.gz -o output_summary.tsv
+```
+
+### minimac imputation, compute thresholds and generate a list of passing variants
+
+This command can be run either as such, or with the additional `-s` flag to require
+the program to run a second pass through the files; with second pass mode enabled,
+RAM requirements become fixed and small, but runtime approximately doubles (it's still
+pretty short, even for TOPMed size imputations).
+
+```bash
+imputed-data-dynamic-threshold.out -o /path/to/chr*.info.gz -o output_summary.tsv -l output_passing_variants.tsv
+```
+
+### minimac imputation, compute thresholds and filter info files to only include passing variants
+
+This command automatically filters info files, and is designed to create info files that are
+compatible with vcfs that have been filtered separately with bcftools. As this tool was designed
+to be used with the Michigan Imputation Server, it anticipates files that will be named `chr[1-22].info.gz`.
+
+```bash
+imputed-data-dynamic-threshold.out -o /path/to/chr*.info.gz -o output_summary.tsv -l output_passing_variants.tsv -s --filter-info-files /path/to/output/files
+```
+
+
 ## Version History
 
 21 10 2023:
