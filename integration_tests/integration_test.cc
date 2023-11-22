@@ -143,7 +143,7 @@ TEST_F(integrationTest, infoInput) {
   maf_bin_boundaries.push_back(0.001);
   maf_bin_boundaries.push_back(0.03);
   maf_bin_boundaries.push_back(0.5);
-  std::vector<std::string> info_files;
+  std::vector<std::string> info_files, vcf_files;
   info_files.push_back(_in_info_tmpfile);
   double target_r2 = 0.43;
   float baseline_r2 = 0.3f;
@@ -151,9 +151,9 @@ TEST_F(integrationTest, infoInput) {
   std::string output_list_filename = _out_list_tmpfile;
   bool second_pass = true;
   std::string filter_info_files_dir = _out_tmpdir;
-  ex.run(maf_bin_boundaries, info_files, target_r2, baseline_r2,
+  ex.run(maf_bin_boundaries, info_files, vcf_files, target_r2, baseline_r2,
          output_table_filename, output_list_filename, second_pass,
-         filter_info_files_dir);
+         filter_info_files_dir, "", "", "");
   EXPECT_TRUE(boost::filesystem::exists(output_table_filename));
   EXPECT_TRUE(boost::filesystem::is_regular_file(output_table_filename));
   EXPECT_TRUE(boost::filesystem::exists(output_list_filename));
