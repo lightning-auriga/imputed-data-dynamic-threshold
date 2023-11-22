@@ -126,6 +126,16 @@ class r2_bin {
     \return number of datapoints remaining after current filter
    */
   unsigned get_filtered_count() const;
+  /*!
+   * \brief set the minimum permissible r2 for all variants
+   * \param r2 the minimum permissible r2 for all variants
+   */
+  void set_baseline_r2(const float &r2);
+  /*!
+   * \brief get the minimum permissible r2 for all variants
+   * \return the minimum permissible r2 for all variants
+   */
+  const float &get_baseline_r2() const;
 
  protected:
   double _bin_min;  //!< minimum MAF in this bin, exclusive
@@ -135,6 +145,7 @@ class r2_bin {
   unsigned _total_count;     //!< total number of loaded variants
   unsigned _filtered_count;  //!< number of variants left with current filter
   float _threshold;          //!< stored r2 threshold to meet target
+  float _baseline;           //!< minimum permissible r2 for any variant
 };
 /*!
   \brief dispatch variants to bins by MAF and handle I/O
@@ -303,12 +314,23 @@ class r2_bins {
    * \param str new variant to add
    */
   void add_typed_variant(const std::string &str);
+  /*!
+   * \brief set the minimum permissible r2 for all variants
+   * \param r2 the minimum permissible r2 for all variants
+   */
+  void set_baseline_r2(const float &r2);
+  /*!
+   * \brief get the minimum permissible r2 for all variants
+   * \return the minimum permissible r2 for all variants
+   */
+  const float &get_baseline_r2() const;
 
  private:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation
   std::map<double, unsigned> _bin_lower_bounds;  //!< MAF lower bound lookup
   std::map<double, unsigned> _bin_upper_bounds;  //!< MAF upper bound lookup
   std::vector<std::string> _typed_variants;  //!< typed variants for reporting
+  float _baseline_r2;                        //!< hard minimum permissible r2
 };
 }  // namespace imputed_data_dynamic_threshold
 

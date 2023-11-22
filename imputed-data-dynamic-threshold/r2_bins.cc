@@ -15,7 +15,8 @@ iddt::r2_bin::r2_bin()
       _total(0.0),
       _total_count(0u),
       _filtered_count(0u),
-      _threshold(0.0f) {}
+      _threshold(0.0f),
+      _baseline(0.3f) {}
 iddt::r2_bin::r2_bin(const r2_bin &obj)
     : _bin_min(obj._bin_min),
       _bin_max(obj._bin_max),
@@ -23,7 +24,8 @@ iddt::r2_bin::r2_bin(const r2_bin &obj)
       _total(obj._total),
       _total_count(obj._total_count),
       _filtered_count(obj._filtered_count),
-      _threshold(obj._threshold) {}
+      _threshold(obj._threshold),
+      _baseline(obj._baseline) {}
 iddt::r2_bin::~r2_bin() throw() {}
 
 void imputed_data_dynamic_threshold::r2_bin::add_value(const std::string &id,
@@ -56,7 +58,8 @@ void imputed_data_dynamic_threshold::r2_bin::compute_threshold(
 }
 
 float imputed_data_dynamic_threshold::r2_bin::report_stored_threshold() const {
-  if (_threshold != _threshold || _threshold >= 0.3f) return _threshold;
+  if (_threshold != _threshold || _threshold >= get_baseline_r2())
+    return _threshold;
   throw std::logic_error(
       "report_stored_threshold called before report_threshold");
 }
@@ -64,7 +67,7 @@ float imputed_data_dynamic_threshold::r2_bin::report_stored_threshold() const {
 void imputed_data_dynamic_threshold::r2_bin::report_threshold(
     std::ostream &out) {
   // threshold defaults to 0.3; may be higher if anything was removed
-  _threshold = 0.3f;
+  _threshold = get_baseline_r2();
   if (_filtered_count) {
     _threshold = std::max<float>(
         _threshold, _data.at(_total_count - _filtered_count).second);
@@ -106,6 +109,9 @@ bool imputed_data_dynamic_threshold::r2_bin::operator==(
   if (!(fabs(_threshold - obj._threshold) < FLT_EPSILON ||
         (_threshold != _threshold && obj._threshold != obj._threshold)))
     return false;
+  if (!(fabs(_baseline - obj._baseline) < FLT_EPSILON ||
+        (_baseline != _baseline && obj._baseline != obj._baseline)))
+    return false;
   return true;
 }
 
@@ -127,13 +133,16 @@ const std::vector<std::pair<std::string, float> > &iddt::r2_bin::get_data()
 const double &iddt::r2_bin::get_total() const { return _total; }
 unsigned iddt::r2_bin::get_total_count() const { return _total_count; }
 unsigned iddt::r2_bin::get_filtered_count() const { return _filtered_count; }
+void iddt::r2_bin::set_baseline_r2(const float &r2) { _baseline = r2; }
+const float &iddt::r2_bin::get_baseline_r2() const { return _baseline; }
 
-iddt::r2_bins::r2_bins() {}
+iddt::r2_bins::r2_bins() : _baseline_r2(0.3f) {}
 iddt::r2_bins::r2_bins(const r2_bins &obj)
     : _bins(obj._bins),
       _bin_lower_bounds(obj._bin_lower_bounds),
       _bin_upper_bounds(obj._bin_upper_bounds),
-      _typed_variants(obj._typed_variants) {}
+      _typed_variants(obj._typed_variants),
+      _baseline_r2(obj._baseline_r2) {}
 iddt::r2_bins::~r2_bins() throw() {}
 void imputed_data_dynamic_threshold::r2_bins::set_bin_boundaries(
     const std::vector<double> &boundaries) {
@@ -147,6 +156,7 @@ void imputed_data_dynamic_threshold::r2_bins::set_bin_boundaries(
     _bin_upper_bounds[boundaries.at(i + 1)] = i;
     r2_bin bin;
     bin.set_bin_bounds(boundaries.at(i), boundaries.at(i + 1));
+    bin.set_baseline_r2(get_baseline_r2());
     _bins.push_back(bin);
   }
 }
@@ -228,7 +238,7 @@ void imputed_data_dynamic_threshold::r2_bins::load_info_file(
         continue;
       }
       r2f = from_string<float>(r2);
-      if (r2f < 0.3) continue;
+      if (r2f < get_baseline_r2()) continue;
       index = find_maf_bin(from_string<double>(maf));
       if (index < _bins.size()) {
         _bins.at(index).add_value(store_ids ? id : "", r2f);
@@ -285,7 +295,7 @@ void imputed_data_dynamic_threshold::r2_bins::load_vcf_file(
         }
         continue;
       }
-      if (*ptr_r2 < 0.3) continue;
+      if (*ptr_r2 < get_baseline_r2()) continue;
       index = find_maf_bin(*ptr_maf > 0.5 ? 1.0 - *ptr_maf : *ptr_maf);
       if (index < _bins.size()) {
         _bins.at(index).add_value(store_ids ? varid : "", *ptr_r2);
@@ -396,7 +406,7 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
                                  "\" line \"" + line + "\"");
       if (!catcher.compare("Imputed")) {
         r2f = from_string<float>(r2);
-        if (r2f < 0.3f) continue;
+        if (r2f < get_baseline_r2()) continue;
         bin_index = find_maf_bin(maf);
         if (bin_index < _bins.size()) {
           if (r2f >= _bins.at(bin_index).report_stored_threshold()) {
@@ -451,6 +461,9 @@ bool imputed_data_dynamic_threshold::r2_bins::operator==(
         this_iter->second != that_iter->second)
       return false;
   }
+  if (fabs(get_baseline_r2() - obj.get_baseline_r2()) > FLT_EPSILON) {
+    return false;
+  }
   return true;
 }
 
@@ -492,3 +505,5 @@ void iddt::r2_bins::set_bin_data(
 void iddt::r2_bins::add_typed_variant(const std::string &str) {
   _typed_variants.push_back(str);
 }
+void iddt::r2_bins::set_baseline_r2(const float &r2) { _baseline_r2 = r2; }
+const float &iddt::r2_bins::get_baseline_r2() const { return _baseline_r2; }

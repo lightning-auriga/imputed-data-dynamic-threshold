@@ -43,6 +43,7 @@ class executor {
    * \param maf_bin_boundaries maf values defining filtering regions
    * \param info_files names of input files containing variant r2 data
    * \param target_r2 target average r2 per bin after filtering
+   * \param baseline_r2 minimum r2 for any imputed variant
    * \param output_table_filename name of file to which to report summary report
    * \param output_list_filename name of file to which to report passing
    * variants \param second_pass whether to save RAM and run in two passes
@@ -50,7 +51,7 @@ class executor {
    */
   void run(const std::vector<double> &maf_bin_boundaries,
            const std::vector<std::string> &info_files, const double &target_r2,
-           const std::string &output_table_filename,
+           const float &baseline_r2, const std::string &output_table_filename,
            const std::string &output_list_filename, bool second_pass,
            const std::string &filter_info_files_dir);
 };

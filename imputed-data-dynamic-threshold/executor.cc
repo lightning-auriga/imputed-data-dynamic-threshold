@@ -14,12 +14,13 @@ iddt::executor::~executor() throw() {}
 
 void iddt::executor::run(const std::vector<double> &maf_bin_boundaries,
                          const std::vector<std::string> &info_files,
-                         const double &target_r2,
+                         const double &target_r2, const float &baseline_r2,
                          const std::string &output_table_filename,
                          const std::string &output_list_filename,
                          bool second_pass,
                          const std::string &filter_info_files_dir) {
   imputed_data_dynamic_threshold::r2_bins bins;
+  bins.set_baseline_r2(baseline_r2);
   std::cout << "creating MAF bins" << std::endl;
   bins.set_bin_boundaries(maf_bin_boundaries);
   std::cout << "iterating through specified info files" << std::endl;

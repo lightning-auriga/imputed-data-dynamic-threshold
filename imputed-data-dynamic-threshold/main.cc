@@ -39,12 +39,14 @@ int main(int argc, const char** const argv) {
   std::string output_list_filename = ap.get_output_list_filename();
   bool second_pass = ap.second_pass();
   std::string filter_info_files_dir = "";
+  float baseline_r2 = ap.get_baseline_r2();
   if (second_pass) {
     filter_info_files_dir = ap.get_filter_info_files_dir();
   }
   imputed_data_dynamic_threshold::executor ex;
-  ex.run(maf_bin_boundaries, info_files, target_r2, output_table_filename,
-         output_list_filename, second_pass, filter_info_files_dir);
+  ex.run(maf_bin_boundaries, info_files, target_r2, baseline_r2,
+         output_table_filename, output_list_filename, second_pass,
+         filter_info_files_dir);
 
   std::cout << "all done woo!" << std::endl;
   return 0;

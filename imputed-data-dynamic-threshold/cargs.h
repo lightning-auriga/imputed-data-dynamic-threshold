@@ -157,6 +157,15 @@ class cargs {
   double get_target_average_r2() const;
 
   /*!
+   * \brief get baseline r2 for all variants
+   * \return baseline r2 for all variants
+   *
+   * this defaults to 0.3, the traditional minimum value
+   * for minimac-style imputations.
+   */
+  float get_baseline_r2() const;
+
+  /*!
     \brief get output tabular result filename
     \return output tabular result filename from command line
 

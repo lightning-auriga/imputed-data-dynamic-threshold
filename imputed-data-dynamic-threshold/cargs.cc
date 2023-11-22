@@ -31,6 +31,9 @@ void imputed_data_dynamic_threshold::cargs::initialize_options() {
       "target-average-r2,r",
       boost::program_options::value<std::string>()->default_value("0.9"),
       "average r2 target for each minor allele frequency bin")(
+      "baseline-r2",
+      boost::program_options::value<std::string>()->default_value("0.3"),
+      "minimum permissible r2 for any imputed variant")(
       "vcf-files,v",
       boost::program_options::value<std::vector<std::string> >()->multitoken(),
       "vcf files containing imputation r2, allele frequency, and imputation "
@@ -151,6 +154,14 @@ double iddt::cargs::get_target_average_r2() const {
     throw std::runtime_error(
         "invalid r2 value provided to "
         "--target-average-r2");
+  return res;
+}
+float iddt::cargs::get_baseline_r2() const {
+  float res = from_string<float>(compute_parameter<std::string>("baseline-r2"));
+  if (res < 0.0 || res > 1.0)
+    throw std::runtime_error(
+        "invalid r2 value provided to "
+        "--baseline-r2");
   return res;
 }
 std::string iddt::cargs::get_output_table_filename() const {
