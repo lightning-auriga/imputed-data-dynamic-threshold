@@ -293,7 +293,26 @@ TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromRam) {
   EXPECT_EQ(std::string("b\nc\nd\ne\nf\ng\nh\ni\n"), o2.str());
 }
 
-TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromFile) {
+TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromVcfFile) {
+  iddt::r2_bins a;
+  std::vector<double> bounds;
+  bounds.push_back(0.001);
+  bounds.push_back(0.03);
+  bounds.push_back(0.5);
+  a.set_bin_boundaries(bounds);
+  // use pre-existing test vcf
+  boost::filesystem::path good_file = "unit_tests/test.vcf.gz";
+  a.load_vcf_file(good_file.string().c_str(), "DR2", "AF", "IMP", false);
+  a.compute_thresholds(0.42f);
+  std::ostringstream o1, o2;
+  a.report_thresholds(o1);
+  a.report_passing_vcf_variants(good_file.string().c_str(), "DR2", "AF", "IMP",
+                                o2);
+  EXPECT_EQ(std::string("chr1:1:A:T\nchr1:3:G:A\nchr1:6:A:C\nchr1:7:A:C\n"),
+            o2.str());
+}
+
+TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromInfoFile) {
   iddt::r2_bins a;
   std::vector<double> bounds;
   bounds.push_back(0.001);
@@ -333,12 +352,12 @@ TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromFile) {
   a.compute_thresholds(0.42f);
   std::ostringstream o1, o2;
   a.report_thresholds(o1);
-  a.report_passing_variants(good_file.string().c_str(), "", o2);
+  a.report_passing_info_variants(good_file.string().c_str(), "", o2);
   EXPECT_EQ(std::string("chr1:1:A:T\nchr1:3:G:A\nchr1:6:A:C\nchr1:7:A:C\n"),
             o2.str());
 }
 
-TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromFileWithOutput) {
+TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromInfoFileWithOutput) {
   iddt::r2_bins a;
   std::vector<double> bounds;
   bounds.push_back(0.001);
@@ -379,7 +398,7 @@ TEST_F(r2BinsTest, r2BinsReportPassingVariantsFromFileWithOutput) {
   std::ostringstream o1, o2;
   a.report_thresholds(o1);
   boost::filesystem::path outdir = tmpdir / "resultsdir";
-  a.report_passing_variants(good_file.string(), outdir.string(), o2);
+  a.report_passing_info_variants(good_file.string(), outdir.string(), o2);
   EXPECT_TRUE(boost::filesystem::exists(outdir));
   EXPECT_TRUE(boost::filesystem::exists(outdir / good_file.filename()));
   gzFile input = NULL;

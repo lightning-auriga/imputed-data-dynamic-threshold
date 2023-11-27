@@ -29,11 +29,17 @@ class cargsTest : public testing::Test {
   std::vector<std::string> _argvec3;
   std::vector<std::string> _argvec4;
   std::vector<std::string> _argvec5;
+  std::vector<std::string> _argvec6;
+  std::vector<std::string> _argvec7;
+  std::vector<std::string> _argvec8;
   const char **_argv1;
   const char **_argv2;
   const char **_argv3;
   const char **_argv4;
   const char **_argv5;
+  const char **_argv6;
+  const char **_argv7;
+  const char **_argv8;
   const std::string _tmp_dir;
 };
 #endif  // UNIT_TESTS_CARGS_TEST_H_

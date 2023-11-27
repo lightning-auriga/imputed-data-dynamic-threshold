@@ -107,11 +107,76 @@ The following command line options are supported with this software:
 |-o<br>--output-table|name of file in which to store tabular output summary. if not specified, results will be printed to terminal. output format is tab-delimited plaintext, one row per frequency bin, with the following columns:<br>`bin_min`: minimum minor allele frequency, exclusive, of the specified bin<br>`bin_max`: maximum minor allele frequency, inclusive, of the specified bin<br>`total_variants`: number of variants in bin before dynamic filtering<br>`threshold`: dynamic filter applied to bin to reach desired average r<sup>2</sup>. this entry can be `nan`, in which case the desired average r<sup>2</sup> is greater than the maximum r<sup>2</sup> of variants falling within this bin (or the bin is empty to begin with)<br>`variants_after_filter`: number of variants in bin after dynamic filtering<br>`proportion_passing`: proportion of variants passing dynamic filter|
 |-l<br>--output-list|name of file in which to store variants passing filters, along with typed variation from input info files. if not specified, list is not generated.|
 |-s<br>--second-pass|for variant list reporting: whether to skip ID storage during threshold calculation, and instead perform a second pass of all the info files once the thresholds have been computed. this substantially reduces the RAM usage of the software, at the cost of file parsing time.|
-|--filter-info-files|path to a directory. if desired, the software can emit output minimac-format info files with computed variant filters applied. for the moment, the output filename structure is not user configurable (will be: `/target/path/chr*.info.gz`). this option only works if `--second-pass` is enabled; otherwise, it is ignored.|
-|--filter-vcf-files|placeholder; not yet supported.|
+|--filter-info-files|path to a directory. when input is minimac-format info files, if desired, the software can emit output info files with computed variant filters applied. for the moment, the output filename structure is not user configurable (will be: `/target/path/chr*.info.gz`). this option only works if `--second-pass` is enabled; otherwise, it is ignored.|
 |-r<br>--target-average-r2|desired average r<sup>2</sup> within bin after dynamic filtering. this should be a value on [0, 1], though values on [0, 0.3] will effectively suppress dynamic filtering, as a flat minimum r<sup>2</sup> filter of 0.3 is applied to all variants. defaults to `-r 0.9`.|
 
+
+## Use Cases
+
+### minimac imputation, compute thresholds only
+
+An arbitrary number of variant (info) files can be specified on the command line.
+
+```bash
+imputed-data-dynamic-threshold.out -i /path/to/chr*.info.gz -o output_summary.tsv
+```
+
+### minimac imputation, compute thresholds and generate a list of passing variants
+
+This command can be run either as such, or with the additional `-s` flag to require
+the program to run a second pass through the files; with second pass mode enabled,
+RAM requirements become fixed and small, but runtime approximately doubles (it's still
+pretty short, even for TOPMed size imputations).
+
+```bash
+imputed-data-dynamic-threshold.out -o /path/to/chr*.info.gz -o output_summary.tsv -l output_passing_variants.tsv
+```
+
+### minimac imputation, compute thresholds and filter info files to only include passing variants
+
+This command automatically filters info files, and is designed to create info files that are
+compatible with vcfs that have been filtered separately with bcftools. As this tool was designed
+to be used with the Michigan Imputation Server, it anticipates files that will be named `chr[1-22].info.gz`.
+
+```bash
+imputed-data-dynamic-threshold.out -o /path/to/chr*.info.gz -o output_summary.tsv -l output_passing_variants.tsv -s --filter-info-files /path/to/output/files
+```
+
+### beagle imputation, compute thresholds and generate a list of passing variants
+
+This program can pull imputation summary metrics from vcf file INFO fields and compute thresholds.
+Vcf parsing is handled with [htslib](https://github.com/samtools/htslib), the C parsing library behind bcftools.
+Second pass mode (`-s`) is supported to keep RAM usage low, if desired. There is not currently
+a supported option for automatically filtering vcf output files; for that functionality,
+use [bcftools](https://samtools.github.io/bcftools/bcftools.html) after computing a variant list with `-l`.
+
+The default settings for INFO field names (`--vcf-info-r2-tag`, `--vcf-info-af-tag`, `--vcf-info-imputed-indicator`)
+are set to be compatible with the output from beagle 5.4 with no adjustments. These can presumably be set
+to other values for support for other theoretical imputation methods that emit vcf output.
+
+```
+imputed-data-dynamic-threshold.out -o /path/to/chr*.vcf.gz -o outpupt_summary.tsv -l output_passing_variants.tsv --vcf-info-r2-tag DR2 --vcf-info-af-tag AF --vcf-info-imputed-indicator IMP
+```
+
+## A Note about Genotyped Variants
+
+The behavior of imputation tools regarding how they report input variants in their output varies.
+Minimac and beagle both flag input variants as having been genotyped, and generally assign
+them perfect quality scores. This tool takes the perspective that input genotyped variants
+should certainly be passed through to the output, but that their quality metrics should not
+be considered as part of the bin thresholding method. The genotyped/imputed status flags
+from minimac and beagle are both respected internally to the program.
+
+If for some reason you don't want this behavior, you will have to override the program's
+understanding of the indicator flags. For minimac info files, the files will need to be edited
+before processing to contain the appropriate indicator in the appropriate column; for vcf
+input like beagle's, you could probably mess around with the imputed indicator setting.
+This program will not support such a workaround as a feature.
+
 ## Version History
+
+23 11 27:
+  - 1.2.0
 
 21 10 2023:
   - future version updates migrated to ChangeLog

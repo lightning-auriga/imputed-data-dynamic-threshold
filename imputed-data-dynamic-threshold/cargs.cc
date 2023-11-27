@@ -25,12 +25,12 @@ void imputed_data_dynamic_threshold::cargs::initialize_options() {
       "(optional) output filtered info file directory; only possible if "
       "second-pass mode is enabled (default: do not write filtered info "
       "files)")(
-      "filter-vcf-files", boost::program_options::value<std::string>(),
-      "(optional) output filtered vcf file directory; only possible if "
-      "second-pass mode is enabled (default: do not write filtered vcf files)")(
       "target-average-r2,r",
       boost::program_options::value<std::string>()->default_value("0.9"),
       "average r2 target for each minor allele frequency bin")(
+      "baseline-r2",
+      boost::program_options::value<std::string>()->default_value("0.3"),
+      "minimum permissible r2 for any imputed variant")(
       "vcf-files,v",
       boost::program_options::value<std::vector<std::string> >()->multitoken(),
       "vcf files containing imputation r2, allele frequency, and imputation "
@@ -77,11 +77,6 @@ std::string iddt::cargs::get_filter_info_files_dir() const {
     return compute_parameter<std::string>("filter-info-files");
   return "";
 }
-std::string iddt::cargs::get_filter_vcf_files_dir() const {
-  if (_vm.count("filter-vcf-files"))
-    return compute_parameter<std::string>("filter-vcf-files");
-  return "";
-}
 std::vector<double> iddt::cargs::get_maf_bin_boundaries() const {
   std::string tag = "maf-bin-boundaries";
   std::vector<double> res;
@@ -113,24 +108,28 @@ std::vector<double> iddt::cargs::get_maf_bin_boundaries() const {
 }
 std::vector<std::string> iddt::cargs::get_info_gz_files() const {
   std::vector<std::string> vec;
-  vec = compute_parameter<std::vector<std::string> >("info-gz-files");
-  for (std::vector<std::string>::const_iterator iter = vec.begin();
-       iter != vec.end(); ++iter) {
-    if (!boost::filesystem::is_regular_file(*iter)) {
-      throw std::runtime_error("argument of -i is not a regular file: \"" +
-                               *iter + "\"");
+  if (_vm.count("info-gz-files")) {
+    vec = compute_parameter<std::vector<std::string> >("info-gz-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -i is not a regular file: \"" +
+                                 *iter + "\"");
+      }
     }
   }
   return vec;
 }
 std::vector<std::string> iddt::cargs::get_vcf_files() const {
   std::vector<std::string> vec;
-  vec = compute_parameter<std::vector<std::string> >("vcf-files");
-  for (std::vector<std::string>::const_iterator iter = vec.begin();
-       iter != vec.end(); ++iter) {
-    if (!boost::filesystem::is_regular_file(*iter)) {
-      throw std::runtime_error("argument of -v is not a regular file: \"" +
-                               *iter + "\"");
+  if (_vm.count("vcf-files")) {
+    vec = compute_parameter<std::vector<std::string> >("vcf-files");
+    for (std::vector<std::string>::const_iterator iter = vec.begin();
+         iter != vec.end(); ++iter) {
+      if (!boost::filesystem::is_regular_file(*iter)) {
+        throw std::runtime_error("argument of -v is not a regular file: \"" +
+                                 *iter + "\"");
+      }
     }
   }
   return vec;
@@ -151,6 +150,14 @@ double iddt::cargs::get_target_average_r2() const {
     throw std::runtime_error(
         "invalid r2 value provided to "
         "--target-average-r2");
+  return res;
+}
+float iddt::cargs::get_baseline_r2() const {
+  float res = from_string<float>(compute_parameter<std::string>("baseline-r2"));
+  if (res < 0.0 || res > 1.0)
+    throw std::runtime_error(
+        "invalid r2 value provided to "
+        "--baseline-r2");
   return res;
 }
 std::string iddt::cargs::get_output_table_filename() const {

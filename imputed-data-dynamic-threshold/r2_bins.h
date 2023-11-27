@@ -126,6 +126,16 @@ class r2_bin {
     \return number of datapoints remaining after current filter
    */
   unsigned get_filtered_count() const;
+  /*!
+   * \brief set the minimum permissible r2 for all variants
+   * \param r2 the minimum permissible r2 for all variants
+   */
+  void set_baseline_r2(const float &r2);
+  /*!
+   * \brief get the minimum permissible r2 for all variants
+   * \return the minimum permissible r2 for all variants
+   */
+  const float &get_baseline_r2() const;
 
  protected:
   double _bin_min;  //!< minimum MAF in this bin, exclusive
@@ -135,6 +145,7 @@ class r2_bin {
   unsigned _total_count;     //!< total number of loaded variants
   unsigned _filtered_count;  //!< number of variants left with current filter
   float _threshold;          //!< stored r2 threshold to meet target
+  float _baseline;           //!< minimum permissible r2 for any variant
 };
 /*!
   \brief dispatch variants to bins by MAF and handle I/O
@@ -205,7 +216,7 @@ class r2_bins {
   */
   void report_passing_variants(std::ostream &out) const;
   /*!
-    \brief report variants passing threshold
+    \brief report variants from an info file passing threshold
     @param filename name of info file
     @param filter_info_files_dir optional directory for reporting filtered
     info files
@@ -215,9 +226,28 @@ class r2_bins {
     pass, so it needs to process the info file again but this time
     simply report IDs that already pass the filters in the relevant bins
    */
-  void report_passing_variants(const std::string &filename,
-                               const std::string &filter_info_files_dir,
-                               std::ostream &out) const;
+  void report_passing_info_variants(const std::string &filename,
+                                    const std::string &filter_info_files_dir,
+                                    std::ostream &out) const;
+  /*!
+    \brief report variants from a vcf file passing threshold
+    @param filename name of vcf file
+    @param r2_info_field name of info field containing estimated r2
+    @param maf_info_field name of info field containing estimated allele
+    frequency; the frequency will automatically be adjusted to MAF if required
+    @param imputed_info_field name of info indicator of whether variant is
+    imputed
+    @param out output stream for data reporting
+
+    this function assumes variant IDs have not been stored during first
+    pass, so it needs to process the vcf file again but this time
+    simply report IDs that already pass the filters in the relevant bins
+   */
+  void report_passing_vcf_variants(const std::string &filename,
+                                   const std::string &r2_info_field,
+                                   const std::string &maf_info_field,
+                                   const std::string &imputed_info_field,
+                                   std::ostream &out) const;
   /*!
     \brief test for equality between objects of this class
     @param obj object to compare to *this
@@ -303,12 +333,23 @@ class r2_bins {
    * \param str new variant to add
    */
   void add_typed_variant(const std::string &str);
+  /*!
+   * \brief set the minimum permissible r2 for all variants
+   * \param r2 the minimum permissible r2 for all variants
+   */
+  void set_baseline_r2(const float &r2);
+  /*!
+   * \brief get the minimum permissible r2 for all variants
+   * \return the minimum permissible r2 for all variants
+   */
+  const float &get_baseline_r2() const;
 
  private:
   std::vector<r2_bin> _bins;                     //!< MAF bins for aggregation
   std::map<double, unsigned> _bin_lower_bounds;  //!< MAF lower bound lookup
   std::map<double, unsigned> _bin_upper_bounds;  //!< MAF upper bound lookup
   std::vector<std::string> _typed_variants;  //!< typed variants for reporting
+  float _baseline_r2;                        //!< hard minimum permissible r2
 };
 }  // namespace imputed_data_dynamic_threshold
 

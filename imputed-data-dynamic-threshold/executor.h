@@ -41,18 +41,27 @@ class executor {
   /*!
    * \brief run primary program logic
    * \param maf_bin_boundaries maf values defining filtering regions
-   * \param info_files names of input files containing variant r2 data
-   * \param target_r2 target average r2 per bin after filtering
-   * \param output_table_filename name of file to which to report summary report
-   * \param output_list_filename name of file to which to report passing
-   * variants \param second_pass whether to save RAM and run in two passes
-   * \param filter_info_files_dir directory to which to write filtered files
+   * \param info_files names of input minimac info files containing variant r2
+   * data \param vcf_files names of input vcfs containing variant r2 data \param
+   * target_r2 target average r2 per bin after filtering \param baseline_r2
+   * minimum r2 for any imputed variant \param output_table_filename name of
+   * file to which to report summary report \param output_list_filename name of
+   * file to which to report passing variants \param second_pass whether to save
+   * RAM and run in two passes \param filter_info_files_dir directory to which
+   * to write filtered files
+   * \param vcf_r2_tag INFO field for R2 in input vcf
+   * \param vcf_af_tag INFO field for allele frequency in input vcf
+   * \param vcf_imp_indicator INFO field for whether variant was imputed in
+   * input vcf
    */
   void run(const std::vector<double> &maf_bin_boundaries,
-           const std::vector<std::string> &info_files, const double &target_r2,
-           const std::string &output_table_filename,
+           const std::vector<std::string> &info_files,
+           const std::vector<std::string> &vcf_files, const double &target_r2,
+           const float &baseline_r2, const std::string &output_table_filename,
            const std::string &output_list_filename, bool second_pass,
-           const std::string &filter_info_files_dir);
+           const std::string &filter_info_files_dir,
+           const std::string &vcf_r2_tag, const std::string &vcf_af_tag,
+           const std::string &vcf_imp_indicator);
 };
 }  // namespace imputed_data_dynamic_threshold
 

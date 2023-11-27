@@ -89,15 +89,6 @@ class cargs {
    */
   std::string get_filter_info_files_dir() const;
   /*!
-    \brief get optional output directory for filtered vcf files
-    \return optional output directory for filtered vcf files
-
-    this is an optional mode on top of second-pass mode that causes
-    filtered vcf files to be reported to an output directory under
-    the same filename as input
-   */
-  std::string get_filter_vcf_files_dir() const;
-  /*!
     \brief get boundaries of minor allele frequency bins for r2 calculations
     \return MAF bin boundaries from command line
 
@@ -155,6 +146,15 @@ class cargs {
     automatically satisfied with a final threshold of 0.3.
    */
   double get_target_average_r2() const;
+
+  /*!
+   * \brief get baseline r2 for all variants
+   * \return baseline r2 for all variants
+   *
+   * this defaults to 0.3, the traditional minimum value
+   * for minimac-style imputations.
+   */
+  float get_baseline_r2() const;
 
   /*!
     \brief get output tabular result filename

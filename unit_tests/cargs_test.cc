@@ -19,12 +19,15 @@ cargsTest::cargsTest()
       _argv3(NULL),
       _argv4(NULL),
       _argv5(NULL),
+      _argv6(NULL),
+      _argv7(NULL),
+      _argv8(NULL),
       _tmp_dir(boost::filesystem::unique_path().native()) {
   std::string test1 = "progname -h";
   populate(test1, &_argvec1, &_argv1);
   std::string test2 =
       "progname -i " + _tmp_dir + "/file1.gz " + _tmp_dir +
-      "/file2.gz -m 0.01 0.1 -r 0.75 "
+      "/file2.gz -m 0.01 0.1 -r 0.75 --baseline-r2 0.4 "
       "-s --filter-info-files targetdir -o summary.txt -l list.txt";
   populate(test2, &_argvec2, &_argv2);
   std::string test3 = "progname -v " + _tmp_dir +
@@ -32,7 +35,7 @@ cargsTest::cargsTest()
                       "--vcf-info-r2-tag r2 "
                       "--vcf-info-af-tag af "
                       "--vcf-info-imputed-indicator imp "
-                      "-s --filter-vcf-files outdir";
+                      "-s";
   populate(test3, &_argvec3, &_argv3);
   std::string test4 = "progname -i " + _tmp_dir +
                       "/file1.gz -o summary.txt "
@@ -40,6 +43,16 @@ cargsTest::cargsTest()
   populate(test4, &_argvec4, &_argv4);
   std::string test5 = "progname --version";
   populate(test5, &_argvec5, &_argv5);
+  std::string test6 =
+      "progname --maf-bin-boundaries -1 0.5 -i blergh.info.gz "
+      "-v blergh.vcf.gz --target-average-r2 -1 --baseline-r2 -1";
+  populate(test6, &_argvec6, &_argv6);
+  std::string test7 =
+      "progname --maf-bin-boundaries 0.01 0.6 "
+      "--target-average-r2 20 --baseline-r2 55";
+  populate(test7, &_argvec7, &_argv7);
+  std::string test8 = "progname --maf-bin-boundaries 0.3 0.4 0.2";
+  populate(test8, &_argvec8, &_argv8);
   boost::filesystem::create_directory(_tmp_dir);
 }
 
@@ -58,6 +71,15 @@ cargsTest::~cargsTest() {
   }
   if (_argv5) {
     delete[] _argv5;
+  }
+  if (_argv6) {
+    delete[] _argv6;
+  }
+  if (_argv7) {
+    delete[] _argv7;
+  }
+  if (_argv8) {
+    delete[] _argv8;
   }
   if (boost::filesystem::exists(_tmp_dir)) {
     boost::filesystem::remove_all(_tmp_dir);
@@ -145,6 +167,7 @@ TEST_F(cargsTest, infoModeBasicAccessors) {
   EXPECT_EQ(observed_files.at(0), _tmp_dir + "/file1.gz");
   EXPECT_EQ(observed_files.at(1), _tmp_dir + "/file2.gz");
   EXPECT_DOUBLE_EQ(ap.get_target_average_r2(), 0.75);
+  EXPECT_FLOAT_EQ(ap.get_baseline_r2(), 0.4f);
   EXPECT_EQ(ap.get_output_table_filename(), "summary.txt");
   EXPECT_EQ(ap.get_output_list_filename(), "list.txt");
 }
@@ -161,7 +184,6 @@ TEST_F(cargsTest, vcfModeBasicAccessors) {
   EXPECT_EQ(ap.get_vcf_info_r2_tag(), "r2");
   EXPECT_EQ(ap.get_vcf_info_af_tag(), "af");
   EXPECT_EQ(ap.get_vcf_info_imputed_indicator(), "imp");
-  EXPECT_EQ(ap.get_filter_vcf_files_dir(), "outdir");
 }
 
 TEST_F(cargsTest, defaultFrequencyBins) {
@@ -175,4 +197,65 @@ TEST_F(cargsTest, defaultFrequencyBins) {
   EXPECT_DOUBLE_EQ(observed_bins.at(3), 0.03);
   EXPECT_DOUBLE_EQ(observed_bins.at(4), 0.05);
   EXPECT_DOUBLE_EQ(observed_bins.at(5), 0.5);
+}
+
+TEST_F(cargsTest, filterInfoFilesDirOptional) {
+  iddt::cargs ap(_argvec5.size(), _argv5);
+  EXPECT_EQ(ap.get_filter_info_files_dir(), "");
+}
+
+TEST_F(cargsTest, mafBinBoundariesCheckedForValidity) {
+  iddt::cargs ap1(_argvec6.size(), _argv6);
+  EXPECT_THROW(ap1.get_maf_bin_boundaries(), std::runtime_error);
+  iddt::cargs ap2(_argvec7.size(), _argv7);
+  EXPECT_THROW(ap2.get_maf_bin_boundaries(), std::runtime_error);
+}
+
+TEST_F(cargsTest, mafBinBoundariesCheckedForOrder) {
+  iddt::cargs ap(_argvec8.size(), _argv8);
+  EXPECT_THROW(ap.get_maf_bin_boundaries(), std::runtime_error);
+}
+
+TEST_F(cargsTest, infoGzFilesMustExist) {
+  iddt::cargs ap(_argvec6.size(), _argv6);
+  EXPECT_THROW(ap.get_info_gz_files(), std::runtime_error);
+}
+
+TEST_F(cargsTest, vcfFilesMustExist) {
+  iddt::cargs ap(_argvec6.size(), _argv6);
+  EXPECT_THROW(ap.get_vcf_files(), std::runtime_error);
+}
+
+TEST_F(cargsTest, infoGzFilesOptional) {
+  iddt::cargs ap(_argvec7.size(), _argv7);
+  EXPECT_EQ(ap.get_info_gz_files(), std::vector<std::string>());
+}
+
+TEST_F(cargsTest, vcfFilesOptional) {
+  iddt::cargs ap(_argvec7.size(), _argv7);
+  EXPECT_EQ(ap.get_vcf_files(), std::vector<std::string>());
+}
+
+TEST_F(cargsTest, targetR2CheckedForValidity) {
+  iddt::cargs ap1(_argvec6.size(), _argv6);
+  EXPECT_THROW(ap1.get_target_average_r2(), std::runtime_error);
+  iddt::cargs ap2(_argvec7.size(), _argv7);
+  EXPECT_THROW(ap2.get_target_average_r2(), std::runtime_error);
+}
+
+TEST_F(cargsTest, baselineR2CheckedForValidity) {
+  iddt::cargs ap1(_argvec6.size(), _argv6);
+  EXPECT_THROW(ap1.get_baseline_r2(), std::runtime_error);
+  iddt::cargs ap2(_argvec7.size(), _argv7);
+  EXPECT_THROW(ap2.get_baseline_r2(), std::runtime_error);
+}
+
+TEST_F(cargsTest, outputTableFilenameOptional) {
+  iddt::cargs ap(_argvec5.size(), _argv5);
+  EXPECT_EQ(ap.get_output_table_filename(), "");
+}
+
+TEST_F(cargsTest, outputListFilenameOptional) {
+  iddt::cargs ap(_argvec5.size(), _argv5);
+  EXPECT_EQ(ap.get_output_list_filename(), "");
 }
