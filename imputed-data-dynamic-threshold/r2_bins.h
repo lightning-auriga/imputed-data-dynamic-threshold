@@ -216,7 +216,7 @@ class r2_bins {
   */
   void report_passing_variants(std::ostream &out) const;
   /*!
-    \brief report variants passing threshold
+    \brief report variants from an info file passing threshold
     @param filename name of info file
     @param filter_info_files_dir optional directory for reporting filtered
     info files
@@ -226,9 +226,28 @@ class r2_bins {
     pass, so it needs to process the info file again but this time
     simply report IDs that already pass the filters in the relevant bins
    */
-  void report_passing_variants(const std::string &filename,
-                               const std::string &filter_info_files_dir,
-                               std::ostream &out) const;
+  void report_passing_info_variants(const std::string &filename,
+                                    const std::string &filter_info_files_dir,
+                                    std::ostream &out) const;
+  /*!
+    \brief report variants from a vcf file passing threshold
+    @param filename name of vcf file
+    @param r2_info_field name of info field containing estimated r2
+    @param maf_info_field name of info field containing estimated allele
+    frequency; the frequency will automatically be adjusted to MAF if required
+    @param imputed_info_field name of info indicator of whether variant is
+    imputed
+    @param out output stream for data reporting
+
+    this function assumes variant IDs have not been stored during first
+    pass, so it needs to process the vcf file again but this time
+    simply report IDs that already pass the filters in the relevant bins
+   */
+  void report_passing_vcf_variants(const std::string &filename,
+                                   const std::string &r2_info_field,
+                                   const std::string &maf_info_field,
+                                   const std::string &imputed_info_field,
+                                   std::ostream &out) const;
   /*!
     \brief test for equality between objects of this class
     @param obj object to compare to *this

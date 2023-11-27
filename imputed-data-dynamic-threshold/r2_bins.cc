@@ -354,7 +354,65 @@ void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
   }
 }
 
-void imputed_data_dynamic_threshold::r2_bins::report_passing_variants(
+void imputed_data_dynamic_threshold::r2_bins::report_passing_vcf_variants(
+    const std::string &filename, const std::string &r2_info_field,
+    const std::string &maf_info_field, const std::string &imputed_info_field,
+    std::ostream &out) const {
+  bcf_srs_t *sr = 0;
+  std::string varid = "";
+  float *ptr_r2 = 0, *ptr_maf = 0;
+  int n_r2 = 0, n_maf = 0, n_imputed = 0;
+  bool is_imputed = false;
+  try {
+    sr = bcf_sr_init();
+    hts_set_log_level(HTS_LOG_OFF);
+    if (!bcf_sr_add_reader(sr, filename.c_str())) {
+      throw std::runtime_error("r2_bins::report_passing_vcf_variants: " +
+                               std::string(bcf_sr_strerror(sr->errnum)));
+    }
+    hts_set_log_level(HTS_LOG_WARNING);
+    ptr_r2 = new float;
+    ptr_maf = new float;
+    while (bcf_sr_next_line(sr)) {
+      bcf_get_info_float(bcf_sr_get_header(sr, 0), bcf_sr_get_line(sr, 0),
+                         r2_info_field.c_str(), &ptr_r2, &n_r2);
+      bcf_get_info_float(bcf_sr_get_header(sr, 0), bcf_sr_get_line(sr, 0),
+                         maf_info_field.c_str(), &ptr_maf, &n_maf);
+      is_imputed =
+          bcf_get_info_flag(bcf_sr_get_header(sr, 0), bcf_sr_get_line(sr, 0),
+                            imputed_info_field.c_str(), NULL, &n_imputed);
+      if ((is_imputed && *ptr_r2 >= get_baseline_r2() &&
+           *ptr_r2 >=
+               _bins
+                   .at(find_maf_bin(*ptr_maf > 0.5 ? 1.0 - *ptr_maf : *ptr_maf))
+                   .report_stored_threshold()) ||
+          !is_imputed) {
+        bcf_unpack(bcf_sr_get_line(sr, 0), BCF_UN_STR);
+        varid = std::string(bcf_sr_get_line(sr, 0)->d.id);
+        out << varid << '\n';
+      }
+    }
+    delete ptr_r2;
+    ptr_r2 = 0;
+    delete ptr_maf;
+    ptr_maf = 0;
+    bcf_sr_destroy(sr);
+    sr = 0;
+  } catch (...) {
+    if (sr) {
+      bcf_sr_destroy(sr);
+    }
+    if (ptr_r2) {
+      delete ptr_r2;
+    }
+    if (ptr_maf) {
+      delete ptr_maf;
+    }
+    throw;
+  }
+}
+
+void imputed_data_dynamic_threshold::r2_bins::report_passing_info_variants(
     const std::string &filename, const std::string &filter_info_files_dir,
     std::ostream &out) const {
   gzFile input = 0;

@@ -69,7 +69,13 @@ void iddt::executor::run(
       for (std::vector<std::string>::const_iterator iter = info_files.begin();
            iter != info_files.end(); ++iter) {
         std::cout << "\t" << *iter << std::endl;
-        bins.report_passing_variants(*iter, filter_info_files_dir, output);
+        bins.report_passing_info_variants(*iter, filter_info_files_dir, output);
+      }
+      for (std::vector<std::string>::const_iterator iter = vcf_files.begin();
+           iter != vcf_files.end(); ++iter) {
+        std::cout << "\t" << *iter << std::endl;
+        bins.report_passing_vcf_variants(*iter, vcf_r2_tag, vcf_af_tag,
+                                         vcf_imp_indicator, output);
       }
     } else {
       bins.report_passing_variants(output);
