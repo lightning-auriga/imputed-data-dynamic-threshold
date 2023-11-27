@@ -194,3 +194,60 @@ TEST_F(integrationTest, infoInput) {
     EXPECT_TRUE(iter->second);
   }
 }
+
+TEST_F(integrationTest, vcfInput) {
+  std::string vcf1 = "unit_tests/test.vcf.gz";
+  std::string vcf2 = "unit_tests/test2.vcf.gz";
+  iddt::executor ex;
+  std::vector<double> maf_bin_boundaries;
+  maf_bin_boundaries.push_back(0.001);
+  maf_bin_boundaries.push_back(0.03);
+  maf_bin_boundaries.push_back(0.5);
+  std::vector<std::string> info_files, vcf_files;
+  vcf_files.push_back(vcf1);
+  vcf_files.push_back(vcf2);
+  double target_r2 = 0.43;
+  float baseline_r2 = 0.3f;
+  std::string output_table_filename = _out_table_tmpfile;
+  std::string output_list_filename = _out_list_tmpfile;
+  bool second_pass = false;
+  std::string filter_info_files_dir = "";
+  ex.run(maf_bin_boundaries, info_files, vcf_files, target_r2, baseline_r2,
+         output_table_filename, output_list_filename, second_pass,
+         filter_info_files_dir, "DR2", "AF", "IMP");
+  EXPECT_TRUE(boost::filesystem::exists(output_table_filename));
+  EXPECT_TRUE(boost::filesystem::is_regular_file(output_table_filename));
+  EXPECT_TRUE(boost::filesystem::exists(output_list_filename));
+  EXPECT_TRUE(boost::filesystem::is_regular_file(output_list_filename));
+
+  std::map<std::string, bool> expected_variants;
+  expected_variants["chr1:1:A:T"] = false;
+  expected_variants["chr1:3:G:A"] = false;
+  expected_variants["chr1:6:A:C"] = false;
+  expected_variants["chr1:7:A:C"] = false;
+  expected_variants["chr2:1:A:T"] = false;
+  expected_variants["chr2:3:G:A"] = false;
+  expected_variants["chr2:6:A:C"] = false;
+  expected_variants["chr2:7:A:C"] = false;
+  std::ifstream input;
+  std::string line = "", varid = "";
+  input.open(_out_list_tmpfile.c_str());
+  if (!input.is_open()) {
+    throw std::runtime_error("output list file: cannot open");
+  }
+  while (input.peek() != EOF) {
+    getline(input, line);
+    std::istringstream strm1(line);
+    if (!(strm1 >> varid)) {
+      throw std::runtime_error("output list file: invalid format");
+    }
+    EXPECT_NE(expected_variants.find(varid), expected_variants.end());
+    expected_variants[varid] = true;
+  }
+  input.close();
+  for (std::map<std::string, bool>::const_iterator iter =
+           expected_variants.begin();
+       iter != expected_variants.end(); ++iter) {
+    EXPECT_TRUE(iter->second);
+  }
+}
