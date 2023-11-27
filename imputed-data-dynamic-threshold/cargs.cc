@@ -25,9 +25,6 @@ void imputed_data_dynamic_threshold::cargs::initialize_options() {
       "(optional) output filtered info file directory; only possible if "
       "second-pass mode is enabled (default: do not write filtered info "
       "files)")(
-      "filter-vcf-files", boost::program_options::value<std::string>(),
-      "(optional) output filtered vcf file directory; only possible if "
-      "second-pass mode is enabled (default: do not write filtered vcf files)")(
       "target-average-r2,r",
       boost::program_options::value<std::string>()->default_value("0.9"),
       "average r2 target for each minor allele frequency bin")(
@@ -78,11 +75,6 @@ bool iddt::cargs::second_pass() const { return compute_flag("second-pass"); }
 std::string iddt::cargs::get_filter_info_files_dir() const {
   if (_vm.count("filter-info-files"))
     return compute_parameter<std::string>("filter-info-files");
-  return "";
-}
-std::string iddt::cargs::get_filter_vcf_files_dir() const {
-  if (_vm.count("filter-vcf-files"))
-    return compute_parameter<std::string>("filter-vcf-files");
   return "";
 }
 std::vector<double> iddt::cargs::get_maf_bin_boundaries() const {

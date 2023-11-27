@@ -35,7 +35,7 @@ cargsTest::cargsTest()
                       "--vcf-info-r2-tag r2 "
                       "--vcf-info-af-tag af "
                       "--vcf-info-imputed-indicator imp "
-                      "-s --filter-vcf-files outdir";
+                      "-s";
   populate(test3, &_argvec3, &_argv3);
   std::string test4 = "progname -i " + _tmp_dir +
                       "/file1.gz -o summary.txt "
@@ -184,7 +184,6 @@ TEST_F(cargsTest, vcfModeBasicAccessors) {
   EXPECT_EQ(ap.get_vcf_info_r2_tag(), "r2");
   EXPECT_EQ(ap.get_vcf_info_af_tag(), "af");
   EXPECT_EQ(ap.get_vcf_info_imputed_indicator(), "imp");
-  EXPECT_EQ(ap.get_filter_vcf_files_dir(), "outdir");
 }
 
 TEST_F(cargsTest, defaultFrequencyBins) {
@@ -203,11 +202,6 @@ TEST_F(cargsTest, defaultFrequencyBins) {
 TEST_F(cargsTest, filterInfoFilesDirOptional) {
   iddt::cargs ap(_argvec5.size(), _argv5);
   EXPECT_EQ(ap.get_filter_info_files_dir(), "");
-}
-
-TEST_F(cargsTest, filterVcfFilesDirOptional) {
-  iddt::cargs ap(_argvec5.size(), _argv5);
-  EXPECT_EQ(ap.get_filter_vcf_files_dir(), "");
 }
 
 TEST_F(cargsTest, mafBinBoundariesCheckedForValidity) {
