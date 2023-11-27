@@ -175,20 +175,4 @@ This program will not support such a workaround as a feature.
 
 ## Version History
 
-23 11 27:
-  - 1.2.0
-
-21 10 2023:
-  - future version updates migrated to ChangeLog
-
-20 10 2023:
-  - update dusty old repo, assign license, and release
-
-XX 05 2022:
-  - add option to filter and write modified info files during second pass
-  - add/improve unit tests with cppunit
-  - v1.1.0
-
-27 09 2021: added variant list reporting; v1.0.2
-
-25 09 2021: project generated from cookiecutter template
+See ChangeLog.
