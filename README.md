@@ -142,8 +142,41 @@ to be used with the Michigan Imputation Server, it anticipates files that will b
 imputed-data-dynamic-threshold.out -o /path/to/chr*.info.gz -o output_summary.tsv -l output_passing_variants.tsv -s --filter-info-files /path/to/output/files
 ```
 
+### beagle imputation, compute thresholds and generate a list of passing variants
+
+This program can pull imputation summary metrics from vcf file INFO fields and compute thresholds.
+Vcf parsing is handled with [htslib](https://github.com/samtools/htslib), the C parsing library behind bcftools.
+Second pass mode (`-s`) is supported to keep RAM usage low, if desired. There is not currently
+a supported option for automatically filtering vcf output files; for that functionality,
+use [bcftools](https://samtools.github.io/bcftools/bcftools.html) after computing a variant list with `-l`.
+
+The default settings for INFO field names (`--vcf-info-r2-tag`, `--vcf-info-af-tag`, `--vcf-info-imputed-indicator`)
+are set to be compatible with the output from beagle 5.4 with no adjustments. These can presumably be set
+to other values for support for other theoretical imputation methods that emit vcf output.
+
+```
+imputed-data-dynamic-threshold.out -o /path/to/chr*.vcf.gz -o outpupt_summary.tsv -l output_passing_variants.tsv --vcf-info-r2-tag DR2 --vcf-info-af-tag AF --vcf-info-imputed-indicator IMP
+```
+
+## A Note about Genotyped Variants
+
+The behavior of imputation tools regarding how they report input variants in their output varies.
+Minimac and beagle both flag input variants as having been genotyped, and generally assign
+them perfect quality scores. This tool takes the perspective that input genotyped variants
+should certainly be passed through to the output, but that their quality metrics should not
+be considered as part of the bin thresholding method. The genotyped/imputed status flags
+from minimac and beagle are both respected internally to the program.
+
+If for some reason you don't want this behavior, you will have to override the program's
+understanding of the indicator flags. For minimac info files, the files will need to be edited
+before processing to contain the appropriate indicator in the appropriate column; for vcf
+input like beagle's, you could probably mess around with the imputed indicator setting.
+This program will not support such a workaround as a feature.
 
 ## Version History
+
+23 11 27:
+  - 1.2.0
 
 21 10 2023:
   - future version updates migrated to ChangeLog
