@@ -27,7 +27,7 @@ There are two primary installation methods, depending on your needs.
   - If needed, [install mamba](https://mamba.readthedocs.io/en/latest/mamba-installation.html#mamba-install)
   - Install the package with mamba:
 
-    `mamba create -n iddt -c https://raw.githubusercontent.com/lightning-auriga/conda-builds/default/conda-builds -c conda-forge imputed-data-dynamic-threshold`
+    `mamba create -n iddt -c https://raw.githubusercontent.com/lightning-auriga/conda-builds/default/conda-builds -c bioconda -c conda-forge imputed-data-dynamic-threshold`
   - Activate the resulting environment:
 
     `mamba activate iddt`
